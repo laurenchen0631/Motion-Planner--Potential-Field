@@ -14,12 +14,10 @@ public class Polygon
             Vertices.Add(new Vector2());
     }
 
-    //Polygon(int nVertice)
-    //{
-    //    numOfVertices = nVertice;
-    //    for (int i = 0; i < numOfVertices; i++)
-    //        Vertices.Add(new UnityEngine.Vector2());
-    //}
+    Polygon(int nVertice)
+    {
+        numOfVertices = nVertice;
+    }
 
     Polygon(int nVertice,Vector2[] vertex)
     {

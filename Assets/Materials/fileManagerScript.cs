@@ -24,13 +24,103 @@ public class fileManagerScript : MonoBehaviour
         try
         {
             StreamReader sReader = new StreamReader(fileName, Encoding.Default);
-            int numOfObjects = 1;
-            int numofPolygon = 1;
-            int numofVertices = 3;
-            int numofControls = 2;
-            using(sReader)
+            int numOfRobots = 1;
+            int numOfPolygons = 1;
+            int numOfVertices = 3;
+            int numOfControls = 2;
+            using (sReader)
             {
-                while (readToDataLine(sReader) != null) ;
+                if (!System.Int32.TryParse(readToDataLine(sReader), out numOfRobots)) Debug.Log("Not number");
+                Debug.Log(numOfRobots);
+                for (int i = 0; i < numOfRobots; i++)
+                {
+                    if (!System.Int32.TryParse(readToDataLine(sReader), out numOfPolygons)) Debug.Log("Not number");
+                    Debug.Log(numOfPolygons);
+                    for (int j = 0; j < numOfPolygons; j++)
+                    {
+                        //vertices
+                        if (!System.Int32.TryParse(readToDataLine(sReader), out numOfVertices)) Debug.Log("Not number");
+                        Debug.Log(numOfVertices);
+                        for (int k = 0; k < numOfVertices; k++)
+                        {
+                            string[] xy = readToDataLine(sReader).Split(' ');
+                            Vector2 point = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
+                            Debug.Log(point);
+                        }
+
+                    }
+
+                    //initial configuration
+                    string[] initConfig = readToDataLine(sReader).Split(' ');
+                    Vector3 initConfiguration = new Vector3(System.Convert.ToSingle(initConfig[0]),
+                        System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2]));
+                    Debug.Log(initConfiguration);
+
+                    //goal configuration
+                    string[] goalConfig = readToDataLine(sReader).Split(' ');
+                    Vector3 goalConfiguration = new Vector3(System.Convert.ToSingle(goalConfig[0]),
+                        System.Convert.ToSingle(goalConfig[1]), System.Convert.ToSingle(goalConfig[2]));
+                    Debug.Log(goalConfiguration);
+
+                    //control points
+                    if (!System.Int32.TryParse(readToDataLine(sReader), out numOfControls)) Debug.Log("Not number");
+                    Debug.Log(numOfControls);
+                    for (int j = 0; j < numOfControls; j++)
+                    {
+                        string[] xy = readToDataLine(sReader).Split(' ');
+                        Vector2 point = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
+                        Debug.Log(point);
+                    }
+                }
+
+                sReader.Close();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log(e.Message);
+        }
+    }
+
+    public void LoadObstacle()
+    {
+        string fileName = OpenFilePanel();
+
+        try
+        {
+            StreamReader sReader = new StreamReader(fileName, Encoding.Default);
+            int numOfObstacle = 1;
+            int numOfPolygons = 1;
+            int numOfVertices = 3;
+            using (sReader)
+            {
+                if (!System.Int32.TryParse(readToDataLine(sReader), out numOfObstacle)) Debug.Log("Not number");
+                Debug.Log(numOfObstacle);
+                for (int i = 0; i < numOfObstacle; i++)
+                {
+                    if (!System.Int32.TryParse(readToDataLine(sReader), out numOfPolygons)) Debug.Log("Not number");
+                    Debug.Log(numOfPolygons);
+                    for (int j = 0; j < numOfPolygons; j++)
+                    {
+                        //vertices
+                        if (!System.Int32.TryParse(readToDataLine(sReader), out numOfVertices)) Debug.Log("Not number");
+                        Debug.Log(numOfVertices);
+                        for (int k = 0; k < numOfVertices; k++)
+                        {
+                            string[] xy = readToDataLine(sReader).Split(' ');
+                            Vector2 point = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
+                            Debug.Log(point);
+                        }
+
+                    }
+
+                    //initial configuration
+                    string[] initConfig = readToDataLine(sReader).Split(' ');
+                    Vector3 initConfiguration = new Vector3(System.Convert.ToSingle(initConfig[0]),
+                        System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2]));
+                    Debug.Log(initConfiguration);
+
+                }
 
                 sReader.Close();
             }
@@ -44,30 +134,14 @@ public class fileManagerScript : MonoBehaviour
     private string readToDataLine(StreamReader sr)
     {
         string line;
-        while ((line = sr.ReadLine()) != null && line[0] == '#')
-        {
-            Debug.Log(line);
-        }
-        Debug.Log(line);
-        //int numVal = 0;
-        //try
-        //{
-        //    numVal = System.Convert.ToInt32(line);
-        //}
-        //catch (System.FormatException e)
-        //{
-        //    Debug.Log("Input string is not a sequence of digits.");
-        //}
-        //catch (System.OverflowException e)
-        //{
-        //    Debug.Log("The number cannot fit in an Int32.");
-        //}
+        while ((line = sr.ReadLine()) != null && line[0] == '#') ;
 
+        //Debug.Log(line);
         return line;
     }
 
     public void SaveFile()
     {
-        
+
     }
 }
