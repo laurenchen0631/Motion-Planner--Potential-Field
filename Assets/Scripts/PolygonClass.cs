@@ -7,26 +7,26 @@ public class Polygon
     private List<Vector2> Vertices = new List<Vector2>();
     public int NumVertices { get { return numOfVertices; } }
 
-    Polygon()
+    public Polygon()
     {
         numOfVertices = 3;
         for (int i = 0; i < numOfVertices; i++)
             Vertices.Add(new Vector2());
     }
 
-    Polygon(int nVertice)
+    public Polygon(int nVertice)
     {
         numOfVertices = nVertice;
     }
 
-    Polygon(int nVertice,Vector2[] vertex)
+    public Polygon(int nVertice, Vector2[] vertex)
     {
         numOfVertices = nVertice;
         for (int i = 0; i < numOfVertices; i++)
             Vertices.Add(vertex[i]);
     }
 
-    Polygon(int nVertice, float[][] vertex)
+    public Polygon(int nVertice, float[][] vertex)
     {
         numOfVertices = nVertice;
         for (int i = 0; i < numOfVertices; i++)
@@ -44,8 +44,25 @@ public class Polygon
         Vertices.Add(newVertex);
     }
 
-    public void modifyVertex(int index,Vector2 newVertex)
+    public void removeVertex(int index)
     {
-        Vertices[index] = newVertex;
+        
     }
+
+    public void removeVertex(Vector2 point)
+    {
+
+    }
+
+    public void modifyVertex(int index, Vector2 newVertex)
+    {
+        if (index >= 0 && index < numOfVertices)
+            Vertices[index] = newVertex;
+    }
+
+    private void sortVertices()
+    {
+
+    }
+
 }

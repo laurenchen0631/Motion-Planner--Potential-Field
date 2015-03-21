@@ -31,36 +31,36 @@ public class fileManagerScript : MonoBehaviour
             using (sReader)
             {
                 if (!System.Int32.TryParse(readToDataLine(sReader), out numOfRobots)) Debug.Log("Not number");
-                Debug.Log(numOfRobots);
                 for (int i = 0; i < numOfRobots; i++)
                 {
                     if (!System.Int32.TryParse(readToDataLine(sReader), out numOfPolygons)) Debug.Log("Not number");
-                    Debug.Log(numOfPolygons);
+                    Robot robot = new Robot();
                     for (int j = 0; j < numOfPolygons; j++)
                     {
                         //vertices
                         if (!System.Int32.TryParse(readToDataLine(sReader), out numOfVertices)) Debug.Log("Not number");
                         Debug.Log(numOfVertices);
+                        Vector2[] vertices = new Vector2[numOfVertices];
                         for (int k = 0; k < numOfVertices; k++)
                         {
                             string[] xy = readToDataLine(sReader).Split(' ');
-                            Vector2 point = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
-                            Debug.Log(point);
+                            vertices[k] = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
+                            Debug.Log(vertices[k]);
                         }
-
+                        robot.addPolygon(new Polygon(numOfVertices, vertices));
                     }
 
                     //initial configuration
                     string[] initConfig = readToDataLine(sReader).Split(' ');
-                    Vector3 initConfiguration = new Vector3(System.Convert.ToSingle(initConfig[0]),
-                        System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2]));
-                    Debug.Log(initConfiguration);
+                    float[] initConfiguration = new float[] {System.Convert.ToSingle(initConfig[0]),
+                        System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2])};
+                    robot.setConfiguration(initConfiguration);
 
                     //goal configuration
                     string[] goalConfig = readToDataLine(sReader).Split(' ');
-                    Vector3 goalConfiguration = new Vector3(System.Convert.ToSingle(goalConfig[0]),
-                        System.Convert.ToSingle(goalConfig[1]), System.Convert.ToSingle(goalConfig[2]));
-                    Debug.Log(goalConfiguration);
+                    float[] goalConfiguration = new float[] {System.Convert.ToSingle(goalConfig[0]),
+                        System.Convert.ToSingle(goalConfig[1]), System.Convert.ToSingle(goalConfig[2])};
+                    robotManagerScript.addGoal(goalConfiguration);
 
                     //control points
                     if (!System.Int32.TryParse(readToDataLine(sReader), out numOfControls)) Debug.Log("Not number");
@@ -70,7 +70,10 @@ public class fileManagerScript : MonoBehaviour
                         string[] xy = readToDataLine(sReader).Split(' ');
                         Vector2 point = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
                         Debug.Log(point);
+                        robot.addControlPoint(point);
                     }
+
+                    robotManagerScript.addRobot(robot);
                 }
 
                 sReader.Close();
@@ -96,30 +99,38 @@ public class fileManagerScript : MonoBehaviour
             {
                 if (!System.Int32.TryParse(readToDataLine(sReader), out numOfObstacle)) Debug.Log("Not number");
                 Debug.Log(numOfObstacle);
+                
                 for (int i = 0; i < numOfObstacle; i++)
                 {
                     if (!System.Int32.TryParse(readToDataLine(sReader), out numOfPolygons)) Debug.Log("Not number");
                     Debug.Log(numOfPolygons);
+                    Obstacle obs = new Obstacle();
+
                     for (int j = 0; j < numOfPolygons; j++)
                     {
                         //vertices
                         if (!System.Int32.TryParse(readToDataLine(sReader), out numOfVertices)) Debug.Log("Not number");
                         Debug.Log(numOfVertices);
+                        Vector2[] vertices = new Vector2[numOfVertices];
                         for (int k = 0; k < numOfVertices; k++)
                         {
                             string[] xy = readToDataLine(sReader).Split(' ');
-                            Vector2 point = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
-                            Debug.Log(point);
+                            vertices[k] = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
+                            Debug.Log(vertices[k]);
                         }
 
+                        obs.addPolygon(new Polygon(numOfVertices, vertices));
                     }
 
                     //initial configuration
                     string[] initConfig = readToDataLine(sReader).Split(' ');
-                    Vector3 initConfiguration = new Vector3(System.Convert.ToSingle(initConfig[0]),
-                        System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2]));
-                    Debug.Log(initConfiguration);
+                    float[] initConfiguration = new float[]{System.Convert.ToSingle(initConfig[0]),
+                        System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2])};
+                    //Debug.Log(initConfiguration);
+                    obs.setConfiguration(initConfiguration);
 
+                    //add the obstacle to obstacleManager
+                    obstacleManagerScript.addObstacle(obs);
                 }
 
                 sReader.Close();
