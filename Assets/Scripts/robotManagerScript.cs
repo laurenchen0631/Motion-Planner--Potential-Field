@@ -12,13 +12,34 @@ public class robotManagerScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        //gameObject.AddComponent<MeshFilter>();
+        //MeshRenderer render = gameObject.AddComponent<MeshRenderer>();
+        //Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        //mesh.Clear();
+        //mesh.vertices = new Vector3[] { new Vector3(0, 0, 0), new Vector3(0, 0, 1), new Vector3(1, 0, 1), new Vector3(1, 0, 0) };
+        //mesh.uv = new Vector2[] { new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(1, 1) };
+        //mesh.triangles = new int[] { 0, 1, 2, 0, 2, 3 };
+        //mesh.normals = new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) }; 
+        ////render.enabled = true;
+        //render.material.color = Color.red;
+        //gameObject.layer = 2;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //gameObject.AddComponent<MeshFilter>();
+        //MeshRenderer render = gameObject.AddComponent<MeshRenderer>();
+        Mesh mesh = new Mesh();
+        mesh.vertices = new Vector3[] { new Vector3(0, 0, 0), new Vector3(0, 0, 1), new Vector3(1, 0, 1), new Vector3(1, 0, 0) };
+        mesh.uv = new Vector2[] { new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(1, 1) };
+        mesh.triangles = new int[] { 0, 1, 2, 0, 2, 3 };
+        //mesh.normals = new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) }; 
+        mesh.RecalculateNormals();
 
+        Graphics.DrawMeshNow(mesh, Vector3.zero, Quaternion.identity);
+
+        gameObject.layer = 2;
     }
 
     static public void addRobot(Robot newRobot)

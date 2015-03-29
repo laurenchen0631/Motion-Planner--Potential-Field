@@ -31,10 +31,12 @@ public class fileManagerScript : MonoBehaviour
             using (sReader)
             {
                 if (!System.Int32.TryParse(readToDataLine(sReader), out numOfRobots)) Debug.Log("Not number");
+                Debug.Log(numOfRobots);
                 for (int i = 0; i < numOfRobots; i++)
                 {
                     if (!System.Int32.TryParse(readToDataLine(sReader), out numOfPolygons)) Debug.Log("Not number");
                     Robot robot = new Robot();
+                    Debug.Log(numOfPolygons);
                     for (int j = 0; j < numOfPolygons; j++)
                     {
                         //vertices
@@ -55,12 +57,14 @@ public class fileManagerScript : MonoBehaviour
                     float[] initConfiguration = new float[] {System.Convert.ToSingle(initConfig[0]),
                         System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2])};
                     robot.setConfiguration(initConfiguration);
+                    Debug.Log("(" + initConfiguration[0] + "," + initConfiguration[1] + "," + initConfiguration[2] + ")");
 
                     //goal configuration
                     string[] goalConfig = readToDataLine(sReader).Split(' ');
                     float[] goalConfiguration = new float[] {System.Convert.ToSingle(goalConfig[0]),
                         System.Convert.ToSingle(goalConfig[1]), System.Convert.ToSingle(goalConfig[2])};
                     robotManagerScript.addGoal(goalConfiguration);
+                    Debug.Log("(" + goalConfiguration[0] + "," + goalConfiguration[1] + "," + goalConfiguration[2] + ")");
 
                     //control points
                     if (!System.Int32.TryParse(readToDataLine(sReader), out numOfControls)) Debug.Log("Not number");
@@ -99,7 +103,6 @@ public class fileManagerScript : MonoBehaviour
             {
                 if (!System.Int32.TryParse(readToDataLine(sReader), out numOfObstacle)) Debug.Log("Not number");
                 Debug.Log(numOfObstacle);
-                
                 for (int i = 0; i < numOfObstacle; i++)
                 {
                     if (!System.Int32.TryParse(readToDataLine(sReader), out numOfPolygons)) Debug.Log("Not number");
@@ -126,11 +129,11 @@ public class fileManagerScript : MonoBehaviour
                     string[] initConfig = readToDataLine(sReader).Split(' ');
                     float[] initConfiguration = new float[]{System.Convert.ToSingle(initConfig[0]),
                         System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2])};
-                    //Debug.Log(initConfiguration);
+                    Debug.Log("(" + initConfiguration[0] + "," + initConfiguration[1] + "," + initConfiguration[2] + ")");
                     obs.setConfiguration(initConfiguration);
 
                     //add the obstacle to obstacleManager
-                    obstacleManagerScript.addObstacle(obs);
+                    GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().addObstacle(obs);
                 }
 
                 sReader.Close();
@@ -145,9 +148,8 @@ public class fileManagerScript : MonoBehaviour
     private string readToDataLine(StreamReader sr)
     {
         string line;
-        while ((line = sr.ReadLine()) != null && line[0] == '#') ;
+        while ((line = sr.ReadLine()) != null && line[0] == '#');
 
-        //Debug.Log(line);
         return line;
     }
 
