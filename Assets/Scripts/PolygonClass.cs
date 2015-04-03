@@ -7,6 +7,7 @@ public class Polygon
     private List<Vector2> Vertices = new List<Vector2>();
     public int NumVertices { get { return numOfVertices; } }
     public GameObject gameobject = new GameObject();
+    public const float UNIT = 5.0f / 128.0f;
 
     public Polygon()
     {
@@ -66,7 +67,7 @@ public class Polygon
     {
         if (index >= 0 && index < numOfVertices)
             Vertices[index] = newVertex;
-    }
+    } 
 
     private void sortVertices()
     {
@@ -85,7 +86,7 @@ public class Polygon
         //Debug.Log("created");
     }
 
-    public GameObject draw(Color color)
+    public GameObject updateMesh(Color color)
     {
         if (gameobject == null)
         {
@@ -99,18 +100,16 @@ public class Polygon
 
         //Add vertices, normals, uv on the Mesh
         Vector3[] vertices = new Vector3[numOfVertices];
-        Vector3[] normals = new Vector3[numOfVertices];
         Vector2[] uv = new Vector2[numOfVertices];
         for (int i = 0; i < numOfVertices; i++)
         {
-            Vector2 vertex = Vertices[i];
+            Vector2 vertex = Vertices[numOfVertices-1-i];
             vertices[i] = new Vector3(vertex.x, 0, vertex.y);
-            normals[i] = new Vector3(0, 1, 0);
             uv[i] = new Vector2(vertex.x, vertex.y);
         }
         mesh.vertices = vertices;
-        mesh.normals = normals;
         mesh.uv = uv;
+        mesh.RecalculateNormals();
 
         //Arrange triangles block on the Mesh
         int v2 = 1;
@@ -128,7 +127,7 @@ public class Polygon
 
         //set polygon color
         gameobject.GetComponent<MeshRenderer>().material.color = color;
-        gameobject.transform.localScale = new Vector3(5.0f / 128.0f, 5.0f / 128.0f, 5.0f / 128.0f);
+        gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
 
         return gameobject;
     }

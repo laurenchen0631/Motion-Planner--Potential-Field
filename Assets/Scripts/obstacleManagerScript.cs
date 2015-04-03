@@ -6,16 +6,21 @@ public class obstacleManagerScript : MonoBehaviour
 {
     private int numOfObstacle = 0;
     private List<Obstacle> obstacleList = new List<Obstacle>();
-    
+
     // Use this for initialization
     void Start()
     {
         numOfObstacle = 0;
         obstacleList = new List<Obstacle>();
+        gameObject.transform.Translate(new Vector3(-1.5f, 0, -2.5f));
     }
-
     // Update is called once per frame 
     void Update()
+    {
+        
+    }
+
+    public void drawObstacles()
     {
         for(int i=0;i<numOfObstacle;i++)
         {
@@ -27,10 +32,11 @@ public class obstacleManagerScript : MonoBehaviour
     {
         numOfObstacle++;
         obstacleList.Add(newObstacle);
+        newObstacle.gameobject.transform.position += new Vector3(-1.5f, 0, -2.5f);
         newObstacle.gameobject.transform.parent = this.gameObject.transform;
     }
 
-    static public void setObstacle(int index,Obstacle newObstacle)
+    static public void setObstacle(int index, Obstacle newObstacle)
     {
 
     }
@@ -46,11 +52,14 @@ public class Obstacle
 
     public GameObject gameobject = new GameObject();
 
+    private float UNIT = 5.0f / 128.0f;
+
     public Obstacle()
     {
         numOfPolygon = 0;
         configuration = new float[] { 0.0f, 0.0f, 0.0f };
         gameobject.name = "Obstacle";
+
     }
 
     public Obstacle(int nPolygons)
@@ -58,7 +67,6 @@ public class Obstacle
         numOfPolygon = nPolygons;
         configuration = new float[] { 0.0f, 0.0f, 0.0f };
         gameobject.name = "Obstacle";
-
     }
 
     public Obstacle(int nPolygons, Polygon[] polygons)
@@ -68,14 +76,12 @@ public class Obstacle
             polygonList.Add(polygons[i]);
         configuration = new float[] { 0.0f, 0.0f, 0.0f };
         gameobject.name = "Obstacle";
-
     }
 
     public void addPolygon(Polygon newPolygon)
     {
         numOfPolygon++;
         polygonList.Add(newPolygon);
-
         newPolygon.gameobject.transform.parent = this.gameobject.transform;
     }
 
@@ -85,6 +91,7 @@ public class Obstacle
             return;
 
         configuration = newConfig;
+        gameobject.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[0] * UNIT);
     }
 
     public void setConfiguration(float x, float y, float theta)
@@ -107,10 +114,9 @@ public class Obstacle
 
     public void Draw(int index)
     {
-        for (int i = 0; i < numOfPolygon;i++ )
-            polygonList[i].draw(Color.black);
+        for (int i = 0; i < numOfPolygon; i++)
+            polygonList[i].updateMesh(Color.black);
 
-        //gameobject.transform.Translate(configuration[0] * 0.2f, 0, configuration[1] * 0.2f);
-            
+        gameobject.name = "Obstacle"+index.ToString();
     }
 }

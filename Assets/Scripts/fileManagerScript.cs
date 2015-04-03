@@ -135,6 +135,7 @@ public class fileManagerScript : MonoBehaviour
                     //add the obstacle to obstacleManager
                     GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().addObstacle(obs);
                 }
+                GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().drawObstacles();
 
                 sReader.Close();
             }
