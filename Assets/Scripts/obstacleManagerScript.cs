@@ -12,7 +12,6 @@ public class obstacleManagerScript : MonoBehaviour
     {
         numOfObstacle = 0;
         obstacleList = new List<Obstacle>();
-        gameObject.transform.Translate(new Vector3(-1.5f, 0, -2.5f));
     }
     // Update is called once per frame 
     void Update()
@@ -32,7 +31,6 @@ public class obstacleManagerScript : MonoBehaviour
     {
         numOfObstacle++;
         obstacleList.Add(newObstacle);
-        newObstacle.gameobject.transform.position += new Vector3(-1.5f, 0, -2.5f);
         newObstacle.gameobject.transform.parent = this.gameObject.transform;
     }
 
@@ -52,7 +50,7 @@ public class Obstacle
 
     public GameObject gameobject = new GameObject();
 
-    private float UNIT = 5.0f / 128.0f;
+    private float UNIT = 8.0f / 128.0f;
 
     public Obstacle()
     {

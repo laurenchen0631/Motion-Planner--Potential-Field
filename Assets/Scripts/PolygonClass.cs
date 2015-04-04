@@ -7,7 +7,7 @@ public class Polygon
     private List<Vector2> Vertices = new List<Vector2>();
     public int NumVertices { get { return numOfVertices; } }
     public GameObject gameobject = new GameObject();
-    public const float UNIT = 5.0f / 128.0f;
+    public const float UNIT = 8.0f / 128.0f;
 
     public Polygon()
     {
