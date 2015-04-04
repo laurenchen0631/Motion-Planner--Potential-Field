@@ -57,7 +57,7 @@ public class Obstacle
         numOfPolygon = 0;
         configuration = new float[] { 0.0f, 0.0f, 0.0f };
         gameobject.name = "Obstacle";
-
+        gameobject.tag = "Obstacle";
     }
 
     public Obstacle(int nPolygons)
@@ -65,6 +65,7 @@ public class Obstacle
         numOfPolygon = nPolygons;
         configuration = new float[] { 0.0f, 0.0f, 0.0f };
         gameobject.name = "Obstacle";
+        gameobject.tag = "Obstacle";
     }
 
     public Obstacle(int nPolygons, Polygon[] polygons)
@@ -74,6 +75,7 @@ public class Obstacle
             polygonList.Add(polygons[i]);
         configuration = new float[] { 0.0f, 0.0f, 0.0f };
         gameobject.name = "Obstacle";
+        gameobject.tag = "Obstacle";
     }
 
     public void addPolygon(Polygon newPolygon)
@@ -89,7 +91,8 @@ public class Obstacle
             return;
 
         configuration = newConfig;
-        gameobject.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[0] * UNIT);
+        gameobject.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
+        gameobject.transform.Rotate(Vector3.up * -configuration[2]);
     }
 
     public void setConfiguration(float x, float y, float theta)
