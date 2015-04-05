@@ -10,18 +10,18 @@ public class obstacleManagerScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        numOfObstacle = 0;
-        obstacleList = new List<Obstacle>();
+        //numOfObstacle = 0;
+        //obstacleList = new List<Obstacle>();
     }
     // Update is called once per frame 
     void Update()
     {
-        
+
     }
 
     public void drawObstacles()
     {
-        for(int i=0;i<numOfObstacle;i++)
+        for (int i = 0; i < numOfObstacle; i++)
         {
             obstacleList[i].Draw(i);
         }
@@ -42,11 +42,11 @@ public class obstacleManagerScript : MonoBehaviour
 
 public class Obstacle
 {
-    private int numOfPolygon;
+    private int numOfPolygon = 0;
     public int NumPolygon { get { return numOfPolygon; } }
 
     private List<Polygon> polygonList = new List<Polygon>();
-    float[] configuration = new float[3];
+    public float[] configuration = new float[3] { 0.0f, 0.0f, 0.0f };
 
     public GameObject gameobject = new GameObject();
 
@@ -54,28 +54,25 @@ public class Obstacle
 
     public Obstacle()
     {
-        numOfPolygon = 0;
-        configuration = new float[] { 0.0f, 0.0f, 0.0f };
-        gameobject.name = "Obstacle";
-        gameobject.tag = "Obstacle";
-    }
-
-    public Obstacle(int nPolygons)
-    {
-        numOfPolygon = nPolygons;
-        configuration = new float[] { 0.0f, 0.0f, 0.0f };
-        gameobject.name = "Obstacle";
-        gameobject.tag = "Obstacle";
+        //numOfPolygon = 0;
+        //configuration = new float[] { 0.0f, 0.0f, 0.0f };
+        setupGameobject();
     }
 
     public Obstacle(int nPolygons, Polygon[] polygons)
     {
-        numOfPolygon = nPolygons;
+        setupGameobject();
         for (int i = 0; i < nPolygons; i++)
-            polygonList.Add(polygons[i]);
-        configuration = new float[] { 0.0f, 0.0f, 0.0f };
+            addPolygon(polygons[i]);
+        //configuration = new float[] { 0.0f, 0.0f, 0.0f };
+    }
+
+    private void setupGameobject()
+    {
         gameobject.name = "Obstacle";
         gameobject.tag = "Obstacle";
+        gameobject.AddComponent<objectEditor>();
+        //gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
     }
 
     public void addPolygon(Polygon newPolygon)
@@ -83,28 +80,50 @@ public class Obstacle
         numOfPolygon++;
         polygonList.Add(newPolygon);
         newPolygon.gameobject.transform.parent = this.gameobject.transform;
+        newPolygon.gameobject.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
-    public void setConfiguration(float[] newConfig)
-    {
-        if (newConfig.Length != 3)
-            return;
+    //public void setConfiguration(float[] newConfig)
+    //{
+    //    if (newConfig.Length != 3)
+    //        return;
 
-        configuration = newConfig;
+    //    configuration = newConfig;
+    //}
+
+    //public void setConfiguration(float x, float y, float theta)
+    //{
+    //    configuration[0] = x;
+    //    configuration[1] = y;
+    //    configuration[2] = theta;
+    //}
+
+    //public float[] getConfiguration()
+    //{
+    //    return configuration;
+    //}
+    public void applyTransform()
+    {
+        gameobject.transform.localScale = gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
         gameobject.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
         gameobject.transform.Rotate(Vector3.up * -configuration[2]);
     }
 
-    public void setConfiguration(float x, float y, float theta)
+    private void setupCollider()
     {
-        configuration[0] = x;
-        configuration[1] = y;
-        configuration[2] = theta;
-    }
-
-    public float[] getConfiguration()
-    {
-        return configuration;
+        MeshCollider collider = this.gameobject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+        MeshFilter[] meshFilters = this.gameobject.GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        int i = 0;
+        while (i < meshFilters.Length)
+        {
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            combine[i].transform = meshFilters[i].transform.worldToLocalMatrix;
+            i++;
+        }
+        Mesh mesh = new Mesh();
+        mesh.CombineMeshes(combine);
+        collider.sharedMesh = mesh;
     }
 
     public void modifyPolygon(int index, Polygon newPolygon)
@@ -118,6 +137,8 @@ public class Obstacle
         for (int i = 0; i < numOfPolygon; i++)
             polygonList[i].updateMesh(Color.black);
 
-        gameobject.name = "Obstacle"+index.ToString();
+        gameobject.name = "Obstacle " + index.ToString();
+        setupCollider();
+        applyTransform();
     }
 }

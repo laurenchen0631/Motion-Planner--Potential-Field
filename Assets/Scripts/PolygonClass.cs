@@ -127,7 +127,6 @@ public class Polygon
 
         //set polygon color
         gameobject.GetComponent<MeshRenderer>().material.color = color;
-        gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
 
         return gameobject;
     }

@@ -63,7 +63,7 @@ public class fileManagerScript : MonoBehaviour
                     string[] goalConfig = readToDataLine(sReader).Split(' ');
                     float[] goalConfiguration = new float[] {System.Convert.ToSingle(goalConfig[0]),
                         System.Convert.ToSingle(goalConfig[1]), System.Convert.ToSingle(goalConfig[2])};
-                    robotManagerScript.addGoal(goalConfiguration);
+                    GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().addGoal(goalConfiguration);
                     Debug.Log("(" + goalConfiguration[0] + "," + goalConfiguration[1] + "," + goalConfiguration[2] + ")");
 
                     //control points
@@ -76,8 +76,7 @@ public class fileManagerScript : MonoBehaviour
                         Debug.Log(point);
                         robot.addControlPoint(point);
                     }
-
-                    robotManagerScript.addRobot(robot);
+                    GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().addRobot(robot);
                 }
 
                 sReader.Close();
@@ -130,7 +129,7 @@ public class fileManagerScript : MonoBehaviour
                     float[] initConfiguration = new float[]{System.Convert.ToSingle(initConfig[0]),
                         System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2])};
                     Debug.Log("(" + initConfiguration[0] + "," + initConfiguration[1] + "," + initConfiguration[2] + ")");
-                    obs.setConfiguration(initConfiguration);
+                    obs.configuration = initConfiguration;
 
                     //add the obstacle to obstacleManager
                     GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().addObstacle(obs);
