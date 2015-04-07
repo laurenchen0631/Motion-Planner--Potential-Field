@@ -100,16 +100,17 @@ public class Polygon
 
         //Add vertices, normals, uv on the Mesh
         Vector3[] vertices = new Vector3[numOfVertices];
+        Vector3[] normals = new Vector3[numOfVertices];
         Vector2[] uv = new Vector2[numOfVertices];
         for (int i = 0; i < numOfVertices; i++)
         {
             Vector2 vertex = Vertices[numOfVertices-1-i];
             vertices[i] = new Vector3(vertex.x, 0, vertex.y);
+            normals[i] = new Vector3(0, 1.0f, 0);
             uv[i] = new Vector2(vertex.x, vertex.y);
         }
         mesh.vertices = vertices;
         mesh.uv = uv;
-        mesh.RecalculateNormals();
 
         //Arrange triangles block on the Mesh
         int v2 = 1;

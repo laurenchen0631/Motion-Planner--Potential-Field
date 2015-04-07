@@ -72,7 +72,6 @@ public class Obstacle
         gameobject.name = "Obstacle";
         gameobject.tag = "Obstacle";
         gameobject.AddComponent<objectEditor>();
-        //gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
     }
 
     public void addPolygon(Polygon newPolygon)
@@ -81,6 +80,13 @@ public class Obstacle
         polygonList.Add(newPolygon);
         newPolygon.gameobject.transform.parent = this.gameobject.transform;
         newPolygon.gameobject.transform.localScale = new Vector3(1f, 1f, 1f);
+    }
+
+    public void updateConfiguration()
+    {
+        configuration[0] = gameobject.transform.position.x / UNIT;
+        configuration[1] = gameobject.transform.position.y / UNIT;
+        configuration[2] = gameobject.transform.rotation.y;
     }
 
     //public void setConfiguration(float[] newConfig)

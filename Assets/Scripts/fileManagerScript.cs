@@ -56,7 +56,7 @@ public class fileManagerScript : MonoBehaviour
                     string[] initConfig = readToDataLine(sReader).Split(' ');
                     float[] initConfiguration = new float[] {System.Convert.ToSingle(initConfig[0]),
                         System.Convert.ToSingle(initConfig[1]), System.Convert.ToSingle(initConfig[2])};
-                    robot.setConfiguration(initConfiguration);
+                    robot.configuration = initConfiguration;
                     Debug.Log("(" + initConfiguration[0] + "," + initConfiguration[1] + "," + initConfiguration[2] + ")");
 
                     //goal configuration
@@ -78,7 +78,7 @@ public class fileManagerScript : MonoBehaviour
                     }
                     GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().addRobot(robot);
                 }
-
+                GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().drawRobots();
                 sReader.Close();
             }
         }
