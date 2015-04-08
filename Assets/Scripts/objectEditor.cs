@@ -3,32 +3,21 @@ using System.Collections;
 
 public class objectEditor : MonoBehaviour
 {
-    public bool isSelected = false;
-    private bool isWithin = false;
+    public bool     isSelected      = false;
+    private bool    isWithin        = false;
     private Vector3 rightClickPos;
     private Vector3 leftClickPos;
-
-    // Use this for initialization
-    void Start()
-    {
-        //Mesh mesh = GetComponent<MeshCollider>().sharedMesh;
-        //for(int i=0;i<mesh.vertexCount;i++)
-        //{
-        //    Debug.Log(mesh.vertices[i]);
-        //}
-    }
 
     // Update is called once per frame
     void Update()
     {
         if (isWithin && Input.GetMouseButtonDown(0))
         {
-            isSelected = true;
-            rightClickPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            //lastPos3 = Input.mousePosition;
+            isSelected      = true;
+            rightClickPos   = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         }
         else if (!isWithin && Input.GetMouseButtonDown(0))
-            isSelected = false;
+            isSelected      = false;
 
         if(isSelected)
         {
@@ -57,11 +46,6 @@ public class objectEditor : MonoBehaviour
                 leftClickPos = Input.mousePosition;
             }
         }
-    }
-
-    void OnMouseOver()
-    {
-
     }
 
     void OnMouseEnter()

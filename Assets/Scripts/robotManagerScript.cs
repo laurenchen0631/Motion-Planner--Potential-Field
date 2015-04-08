@@ -4,14 +4,9 @@ using System.Collections.Generic;
 
 public class robotManagerScript : MonoBehaviour
 {
-    private int numOfRobot = 0;
-    private List<Robot> robotList = new List<Robot>();
-    public List<float[]> goalConfigList = new List<float[]>();
-
-    // Use this for initialization
-    void Start()
-    {
-    }
+    private int             numOfRobot      = 0;
+    private List<Robot>     robotList       = new List<Robot>();
+    public List<float[]>    goalConfigList  = new List<float[]>();
 
     // Update is called once per frame
     void Update()
@@ -21,9 +16,7 @@ public class robotManagerScript : MonoBehaviour
     public void drawRobots()
     {
         for (int i = 0; i < numOfRobot; i++)
-        {
             robotList[i].Draw(i);
-        }
     }
 
     public void addRobot(Robot newRobot)
@@ -38,25 +31,20 @@ public class robotManagerScript : MonoBehaviour
         if (newGoal.Length == 3)
             goalConfigList.Add(newGoal);
     }
-
-    static public void setRobot(int index, Robot newRobot)
-    {
-
-    }
 }
 
 public class Robot
 {
-    private int numOfPolygon = 0;
-    private List<Polygon> polygonList = new List<Polygon>();
+    private int             numOfPolygon    = 0;
+    private List<Polygon>   polygonList     = new List<Polygon>();
 
-    private int numOfControl = 0;
-    private List<Vector2> controlList = new List<Vector2>();
+    private int             numOfControl    = 0;
+    private List<Vector2>   controlList     = new List<Vector2>();
 
-    public float[] configuration = new float[3] { 0.0f, 0.0f, 0.0f };
+    public float[]          configuration   = new float[3] { 0.0f, 0.0f, 0.0f };
 
-    public GameObject gameobject = new GameObject();
-    private float UNIT = 8.0f / 128.0f;
+    public GameObject       gameobject      = new GameObject();
+    private float           UNIT            = 8.0f / 128.0f;
 
     public Robot()
     {
@@ -75,7 +63,6 @@ public class Robot
         gameobject.name = "Robot";
         gameobject.tag = "Robot";
         gameobject.AddComponent<objectEditor>();
-        //gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
     }
 
     public void addPolygon(Polygon newPolygon)
@@ -86,31 +73,12 @@ public class Robot
         newPolygon.gameobject.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
-    //public void setConfiguration(float[] newConfig)
-    //{
-    //    if (newConfig.Length != 3)
-    //        return;
-
-    //    configuration = newConfig;
-    //}
-
-    //public void setConfiguration(float x, float y, float theta)
-    //{
-    //    configuration[0] = x;
-    //    configuration[1] = y;
-    //    configuration[2] = theta;
-    //}
     public void updateConfiguration()
     {
         configuration[0] = gameobject.transform.position.x / UNIT;
         configuration[1] = gameobject.transform.position.y / UNIT;
         configuration[2] = 360 - gameobject.transform.rotation.y;
     }
-
-    //public float[] getConfiguration()
-    //{
-    //    return configuration;
-    //}
 
     public void addControlPoint(Vector2 newPoint)
     {
@@ -136,7 +104,7 @@ public class Robot
 
     public void applyTransform()
     {
-        gameobject.transform.localScale = gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
+        gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
         gameobject.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
         gameobject.transform.Rotate(Vector3.up * -configuration[2]);
     }

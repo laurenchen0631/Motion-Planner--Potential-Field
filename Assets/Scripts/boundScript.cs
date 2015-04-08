@@ -3,8 +3,6 @@ using System.Collections;
 
 public class boundScript : MonoBehaviour 
 {
-    //private float UNIT = 8.0f / 128.0f;
-    //private Vector3 lastPos;
 
     void OnTriggerEnter(Collider other)
     {
