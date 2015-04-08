@@ -104,7 +104,7 @@ public class Robot
     {
         configuration[0] = gameobject.transform.position.x / UNIT;
         configuration[1] = gameobject.transform.position.y / UNIT;
-        configuration[2] = gameobject.transform.rotation.y;
+        configuration[2] = 360 - gameobject.transform.rotation.y;
     }
 
     //public float[] getConfiguration()

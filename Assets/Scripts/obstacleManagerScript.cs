@@ -16,7 +16,7 @@ public class obstacleManagerScript : MonoBehaviour
     // Update is called once per frame 
     void Update()
     {
-
+       
     }
 
     public void drawObstacles()
@@ -86,7 +86,7 @@ public class Obstacle
     {
         configuration[0] = gameobject.transform.position.x / UNIT;
         configuration[1] = gameobject.transform.position.y / UNIT;
-        configuration[2] = gameobject.transform.rotation.y;
+        configuration[2] = 360 - gameobject.transform.rotation.y;
     }
 
     //public void setConfiguration(float[] newConfig)

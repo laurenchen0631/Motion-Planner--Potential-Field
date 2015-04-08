@@ -7,6 +7,10 @@ TagManager:
   - Bound
   - Obstacle
   - Robot
+  - West Wall
+  - East Wall
+  - South Wall
+  - North Wall
   layers:
   - Default
   - TransparentFX
