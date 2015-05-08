@@ -129,7 +129,7 @@ public class Robot
     public void Draw(int index)
     {
         for (int i = 0; i < numOfPolygon; i++)
-            polygonList[i].updateMesh(Color.red);
+            polygonList[i].threeDMesh(Color.red);
 
         gameobject.name = "Robot " + index.ToString();
         setupCollider();

@@ -109,7 +109,7 @@ public class Obstacle
     public void Draw(int index)
     {
         for (int i = 0; i < numOfPolygon; i++)
-            polygonList[i].updateMesh(Color.black);
+            polygonList[i].threeDMesh(Color.black);
 
         gameobject.name = "Obstacle " + index.ToString();
         setupCollider();

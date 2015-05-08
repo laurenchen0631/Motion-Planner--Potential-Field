@@ -27,8 +27,9 @@ public class objectEditor : MonoBehaviour
                 Vector3 nowPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 rightClickPos = Camera.main.ScreenToWorldPoint(rightClickPos);
                 Vector3 offset = nowPos - rightClickPos;
-                Vector3 targetPosition = transform.position += new Vector3(offset.x, 0, offset.z);
-                transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime*5);
+                //Vector3 targetPosition = transform.position += new Vector3(offset.x, 0, offset.z);
+                transform.Translate(offset.x, 0, offset.z, Space.World);
+                //transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime*5);
                 rightClickPos = Input.mousePosition;
             }
             else if (Input.GetMouseButtonDown(1))
