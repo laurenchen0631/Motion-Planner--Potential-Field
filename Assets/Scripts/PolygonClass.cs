@@ -141,7 +141,7 @@ public class Polygon
         Vector3[] point = new Vector3[numOfVertices * 2];
         for (int i = 0; i < numOfVertices; i++)
         {
-            point[i] = new Vector3(Vertices[numOfVertices - 1 - i].x, 20.0f, Vertices[numOfVertices - 1 - i].y);
+            point[i] = new Vector3(Vertices[numOfVertices - 1 - i].x, 1.0f, Vertices[numOfVertices - 1 - i].y);
             point[numOfVertices + i] = new Vector3(Vertices[numOfVertices - 1 - i].x, 0.0f, Vertices[numOfVertices - 1 - i].y);
             
         }
@@ -181,8 +181,8 @@ public class Polygon
             normals[baseIndex + 2] = normale;
             normals[baseIndex + 3] = normale;
         }
-
         #endregion
+
         #region Triangles
         int numTriangles = 3 * (numOfVertices - 2);
         int[] triangles = new int[numTriangles * 2 + 6 * numOfVertices];
@@ -203,34 +203,25 @@ public class Polygon
             v2++;
             v3++;
 
-            //Debug.Log("3");
         }
         //side plane
         for (int i = 0; i < numOfVertices; i++)
         {
             int baseIndex = numTriangles * 2 + i * 6;
             int vertx = 2 * numOfVertices + i * 4;
-            Debug.Log(baseIndex);
-            Debug.Log(vertx);
+            //Debug.Log(baseIndex);
+            //Debug.Log(vertx);
 
             triangles[baseIndex] = triangles[baseIndex + 3] = vertx;
             triangles[baseIndex + 2] = triangles[baseIndex + 4] = vertx + 2;
             triangles[baseIndex + 1] = vertx + 1;
             triangles[baseIndex + 5] = vertx + 3;
 
-            //Debug.Log("4");
         }
-        for (int i = 0; i < triangles.Length;i++)
-        {
-            Debug.Log(triangles[i]);
-            if(i%3 == 2)
-                Debug.Log("------------------");
-        }
+        
         #endregion
-        Debug.Log("next");
         mesh.vertices = vertices;
         mesh.normals = normals;
-        //Debug.Log("5");
         mesh.triangles = triangles;
         mesh.RecalculateBounds();
         mesh.Optimize();

@@ -58,6 +58,7 @@ public class Obstacle
     {
         gameobject.name = "Obstacle";
         gameobject.tag = "Obstacle";
+        gameobject.layer = LayerMask.NameToLayer("Obstacle"); ;
         gameobject.AddComponent<objectEditor>();
     }
 
@@ -78,7 +79,7 @@ public class Obstacle
 
     public void applyTransform()
     {
-        gameobject.transform.localScale = new Vector3(UNIT, UNIT, UNIT);
+        gameobject.transform.localScale = new Vector3(UNIT, 1, UNIT);
         gameobject.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
         gameobject.transform.Rotate(Vector3.up * -configuration[2]);
     }
