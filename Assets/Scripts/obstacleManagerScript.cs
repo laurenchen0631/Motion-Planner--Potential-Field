@@ -84,6 +84,15 @@ public class Obstacle
         gameobject.transform.Rotate(Vector3.up * -configuration[2]);
     }
 
+    private void ChangeLayers(Transform trans)
+    {
+        trans.gameObject.layer = LayerMask.NameToLayer("Obstacle");
+        foreach (Transform child in trans)
+        {
+            ChangeLayers(child);
+        }
+    }
+
     private void setupCollider()
     {
         MeshCollider collider = this.gameobject.AddComponent(typeof(MeshCollider)) as MeshCollider;
@@ -101,6 +110,12 @@ public class Obstacle
         collider.sharedMesh = mesh;
     }
 
+    private void setupRigidbody()
+    {
+        Rigidbody rigid = gameobject.AddComponent<Rigidbody>();
+        rigid.constraints = RigidbodyConstraints.FreezeAll;
+    }
+
     public void modifyPolygon(int index, Polygon newPolygon)
     {
         if (index >= 0 && index < numOfPolygon)
@@ -111,9 +126,13 @@ public class Obstacle
     {
         for (int i = 0; i < numOfPolygon; i++)
             polygonList[i].threeDMesh(Color.black);
-
+            
         gameobject.name = "Obstacle " + index.ToString();
-        setupCollider();
+        ChangeLayers(gameobject.transform);
+        //setupCollider();
+        setupRigidbody();
+        
         applyTransform();
     }
 }
+

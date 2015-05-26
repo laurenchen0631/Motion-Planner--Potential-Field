@@ -149,6 +149,21 @@ public class Robot
         gameobject.transform.Rotate(Vector3.up * -configuration[2]);
     }
 
+    private void ChangeLayers(Transform trans)
+    {
+        trans.gameObject.layer = LayerMask.NameToLayer("Robot");
+        foreach (Transform child in trans)
+        {
+            ChangeLayers(child);
+        }
+    }
+
+    private void setupRigidbody()
+    {
+        Rigidbody rigid = gameobject.AddComponent<Rigidbody>();
+        rigid.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+    }
+
     private void setupCollider()
     {
         MeshCollider collider = this.gameobject.AddComponent(typeof(MeshCollider)) as MeshCollider;
@@ -168,11 +183,13 @@ public class Robot
 
     public void Draw(int index)
     {
-        for (int i = 0; i < numOfPolygon; i++)
+        for (int i = 0; i < numOfPolygon; i++) 
             polygonList[i].threeDMesh(Color.red);
 
         gameobject.name = "Robot " + index.ToString();
-        setupCollider();
+        ChangeLayers(gameobject.transform);
+        //setupCollider();
+        setupRigidbody();
         applyTransform();
     }
 }

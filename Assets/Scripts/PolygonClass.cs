@@ -26,11 +26,9 @@ public class Polygon
     public Polygon(int nVertice, Vector2[] vertex)
     {
         numOfVertices = nVertice;
-        //Debug.Log(numOfVertices);
         for (int i = 0; i < numOfVertices; i++)
             Vertices.Add(vertex[i]);
-        //for (int i = 0; i < numOfVertices; i++)
-        //    Debug.Log(Vertices[i]);
+
         createObject();
     }
 
@@ -53,25 +51,10 @@ public class Polygon
         Vertices.Add(newVertex);
     }
 
-    public void removeVertex(int index)
-    {
-
-    }
-
-    public void removeVertex(Vector2 point)
-    {
-
-    }
-
     public void modifyVertex(int index, Vector2 newVertex)
     {
         if (index >= 0 && index < numOfVertices)
             Vertices[index] = newVertex;
-    }
-
-    private void sortVertices()
-    {
-
     }
 
     private void createObject()
@@ -83,7 +66,17 @@ public class Polygon
         //Add MeshFilter and MeshRenderer for gameobject
         gameobject.AddComponent<MeshFilter>();
         gameobject.AddComponent<MeshRenderer>();
-        //Debug.Log("created");
+    }
+
+    private void addCollider()
+    {
+        if (gameobject.GetComponent<MeshCollider>())
+            return;
+        
+        MeshCollider collider = gameobject.AddComponent<MeshCollider>() as MeshCollider;
+        collider.convex = true;
+        
+        //gameobject.AddComponent<Rigidbody>();
     }
 
     public GameObject updateMesh(Color color)
@@ -227,6 +220,7 @@ public class Polygon
         mesh.Optimize();
 
         gameobject.GetComponent<MeshRenderer>().material.color = color;
+        addCollider();
 
         return gameobject;
     }
