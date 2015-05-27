@@ -10,6 +10,7 @@ public class robotManagerScript : MonoBehaviour
     public List<GameObject> goalGameobjects = new List<GameObject>();
     private byte[,] bitmap = new byte[130, 130];
     private float UNIT = 8.0f / 128.0f;
+    public bool isStarting = false;
 
     // Update is called once per frame
     void Update()
@@ -36,6 +37,7 @@ public class robotManagerScript : MonoBehaviour
         goalGameobjects.Add(GameObject.Instantiate(robotList[index].gameobject));
         goalGameobjects[index].name = "Robot " + index + " Goal";
         goalGameobjects[index].transform.parent = this.gameObject.transform;
+        goalGameobjects[index].transform.localScale = new Vector3(UNIT, 0.5f, UNIT);
 
         float[] configuration = goalConfigList[index];
         goalGameobjects[index].transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);

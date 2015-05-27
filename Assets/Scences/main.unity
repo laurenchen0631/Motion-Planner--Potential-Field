@@ -663,6 +663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalGameobjects: []
+  isStarting: 0
 --- !u!1 &663262480
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,6 +880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalGameobjects: []
+  isStarting: 0
 --- !u!4 &989179753
 Transform:
   m_ObjectHideFlags: 0

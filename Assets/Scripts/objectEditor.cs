@@ -14,7 +14,7 @@ public class objectEditor : MonoBehaviour
         if (!isWithin && Input.GetMouseButtonDown(0))
             isSelected = false;
 
-        if (isSelected)
+        if (isSelected && !(GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().isStarting) )
         {
             // button values are 0 for left button, 1 for right button, 2 for the middle button.
             if (Input.GetMouseButton(0))
