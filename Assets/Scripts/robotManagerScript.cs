@@ -34,14 +34,18 @@ public class robotManagerScript : MonoBehaviour
 
     private void drawGoal(int index)
     {
-        goalGameobjects.Add(GameObject.Instantiate(robotList[index].gameobject));
-        goalGameobjects[index].name = "Robot " + index + " Goal";
-        goalGameobjects[index].transform.parent = this.gameObject.transform;
-        goalGameobjects[index].transform.localScale = new Vector3(UNIT, 0.5f, UNIT);
+        GameObject go = GameObject.Instantiate(robotList[index].gameobject);
+        goalGameobjects.Add(go);
+        go.name = "Robot " + index + " Goal";
+        go.transform.parent = this.gameObject.transform;
+        go.transform.localScale = new Vector3(UNIT, 0.5f, UNIT);
 
         float[] configuration = goalConfigList[index];
-        goalGameobjects[index].transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
-        goalGameobjects[index].transform.Rotate(Vector3.up * -configuration[2]);
+        go.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
+        go.transform.Rotate(Vector3.up * -configuration[2]);
+
+        robotDetailScript script = go.AddComponent<robotDetailScript>();
+        script.setControl(robotList[index].getControls());
 
         foreach (MeshRenderer render in goalGameobjects[index].GetComponentsInChildren<MeshRenderer>())
             render.material.color = Color.blue;
@@ -160,6 +164,11 @@ public class Robot
     public Vector2 getControlPoint(int index)
     {
         return controlList[index];
+    }
+
+    public List<Vector2> getControls()
+    {
+        return controlList;
     }
 
     public void modifyPolygon(int index, Polygon newPolygon)
