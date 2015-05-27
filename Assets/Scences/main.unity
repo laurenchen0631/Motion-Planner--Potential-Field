@@ -363,7 +363,7 @@ GameObject:
   - 54: {fileID: 523305860}
   m_Layer: 8
   m_Name: North Wall
-  m_TagString: North Wall
+  m_TagString: Bound
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -430,7 +430,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 523305854}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: .0500000007
   m_UseGravity: 1
@@ -662,6 +662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907bcb7bcc76a8d4a95c4a6779657094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  goalGameobjects: []
 --- !u!1 &663262480
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,7 +776,7 @@ GameObject:
   - 54: {fileID: 760598754}
   m_Layer: 8
   m_Name: West Wall
-  m_TagString: West Wall
+  m_TagString: Bound
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -842,7 +843,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 760598748}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: .0500000007
   m_UseGravity: 1
@@ -877,6 +878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907bcb7bcc76a8d4a95c4a6779657094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  goalGameobjects: []
 --- !u!4 &989179753
 Transform:
   m_ObjectHideFlags: 0
@@ -903,7 +905,7 @@ GameObject:
   - 54: {fileID: 1039148658}
   m_Layer: 8
   m_Name: South Wall
-  m_TagString: South Wall
+  m_TagString: Bound
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -970,7 +972,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1039148652}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: .0500000007
   m_UseGravity: 1
@@ -1123,7 +1125,7 @@ GameObject:
   - 54: {fileID: 1128254779}
   m_Layer: 8
   m_Name: East Wall
-  m_TagString: East Wall
+  m_TagString: Bound
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1190,7 +1192,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1128254773}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: .0500000007
   m_UseGravity: 1

@@ -14,21 +14,17 @@ public class robotManagerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     public void drawRobots()
     {
         for (int i = 0; i < numOfRobot; i++)
         {
-            drawRobot(i);
+            robotList[i].Draw3D(i);
             drawGoal(i);
+            //drawGoal(i);
         }
-    }
-
-    private void drawRobot(int index)
-    {
-        robotList[index].Draw3D(index);
     }
 
     private void drawGoal(int index)
@@ -41,8 +37,11 @@ public class robotManagerScript : MonoBehaviour
         goalGameobjects[index].transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
         goalGameobjects[index].transform.Rotate(Vector3.up * -configuration[2]);
 
-        foreach (MeshRenderer render in goalGameobjects[index].GetComponentsInChildren<MeshRenderer>())
-            render.material.color = Color.blue;
+        
+        //foreach(M)
+        //goalGameobjects[index].GetComponentsInChildren<MeshRenderer>().color = Color.blue;
+
+
     }
 
     public void addRobot(Robot newRobot)
@@ -92,17 +91,17 @@ public class robotManagerScript : MonoBehaviour
 
     public void resolvePotential()
     {
-
+      
     }
 }
 
 public class Robot
 {
     private int numOfPolygon = 0;
-    private List<Polygon> polygonList = new List<Polygon>();
+    public List<Polygon> polygonList = new List<Polygon>();
 
     private int numOfControl = 0;
-    private List<Vector2> controlList = new List<Vector2>();
+    public List<Vector2> controlList = new List<Vector2>();
 
     public float[] configuration = new float[3] { 0.0f, 0.0f, 0.0f };
 
@@ -111,6 +110,21 @@ public class Robot
 
     public Robot()
     {
+        setupGameobject();
+    }
+
+    public Robot(Robot robot, float[] config)
+    {
+        //numOfPolygon = robot.numOfPolygon;
+        for (int i = 0; i < robot.polygonList.Count;i++ )
+            addPolygon(robot.polygonList[i]);
+        //polygonList = new List<Polygon>(robot.polygonList);
+
+        numOfControl = robot.numOfControl;
+        controlList = new List<Vector2>(controlList);
+        
+        configuration = config;
+
         setupGameobject();
     }
 
@@ -224,5 +238,7 @@ public class Robot
         gameobject.name = "Robot " + index.ToString();
         setupCollider();
         applyTransform();
+
+        //return gameobject;
     }
 }
