@@ -113,7 +113,9 @@ public class Obstacle
     private void setupRigidbody()
     {
         Rigidbody rigid = gameobject.AddComponent<Rigidbody>();
-        rigid.constraints = RigidbodyConstraints.FreezeAll;
+        rigid.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        rigid.mass = 1000;
+        rigid.drag = 50;
     }
 
     public void modifyPolygon(int index, Polygon newPolygon)
