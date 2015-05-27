@@ -45,7 +45,7 @@ public class robotManagerScript : MonoBehaviour
         go.transform.Rotate(Vector3.up * -configuration[2]);
 
         robotDetailScript script = go.AddComponent<robotDetailScript>();
-        script.setControl(robotList[index].getControls());
+        script.setControls(robotList[index].getControls());
 
         foreach (MeshRenderer render in goalGameobjects[index].GetComponentsInChildren<MeshRenderer>())
             render.material.color = Color.blue;
@@ -91,14 +91,25 @@ public class robotManagerScript : MonoBehaviour
             }
         }
 
-        float[] goal = goalConfigList[index];
-        bitmap[(int)(goal[0] / UNIT), (int)(goal[1] / UNIT)] = 0;
+        float[] goal = goalGameobjects[index].GetComponent<robotDetailScript>().configuration;
+        for (int i = 0; i < goalGameobjects[index].GetComponent<robotDetailScript>().getNumControls(); i++)
+        {
+            Vector2 controlPos = goalGameobjects[index].GetComponent<robotDetailScript>().getControlConfig(i);
+            Debug.Log(controlPos);
+            goal[0] += controlPos.x;
+            goal[1] += controlPos.y;
+
+            bitmap[(int)(goal[0]), (int)(goal[1])] = 0;
+        }
+        //List<Vector2> controls = goalGameobjects[index].GetComponent<robotDetailScript>().getControls();
+        
+        
         //Debug.Log("Complete");
     }
 
     public void resolvePotential()
     {
-
+        initBitmap(0);
     }
 }
 

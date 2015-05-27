@@ -6,7 +6,7 @@ public class robotDetailScript : MonoBehaviour {
 
     public float[] configuration = new float[3];
     private const float UNIT = 1.0f / 16.0f;
-    private List<Vector2> controlList = new List<Vector2>();
+    public List<Vector2> controlList = new List<Vector2>();
 	// Use this for initialization
 	void Start () {
 	
@@ -14,15 +14,33 @@ public class robotDetailScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Vector3 position = gameObject.transform.position;
-        configuration[0] = position[0] / UNIT;
-        configuration[1] = position[2] / UNIT;
-        configuration[2] = gameObject.transform.rotation.eulerAngles[1];
-	    //gameObject.transform
+        Transform trans = gameObject.transform;
+        configuration[0] = trans.position[0] / UNIT;
+        configuration[1] = trans.position[2] / UNIT;
+        configuration[2] = trans.rotation.eulerAngles[1];
 	}
 
-    public void setControl(List<Vector2> controls)
+    public void setControls(List<Vector2> controls)
     {
         controlList = new List<Vector2>(controls);
+    }
+
+    public List<Vector2> getControls()
+    {
+        return controlList;
+    }
+
+    public int getNumControls()
+    {
+        return controlList.Count;
+    }
+
+    public Vector2 getControlConfig(int index) 
+    {
+        float sin = Mathf.Sin(configuration[2] * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(configuration[2] * Mathf.Deg2Rad);
+        Vector2 control = controlList[index];
+
+        return new Vector2(cos * control.x - sin * control.y, cos * control.y - sin * control.x);
     }
 }
