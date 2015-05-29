@@ -8,7 +8,6 @@ public class robotManagerScript : MonoBehaviour
     private List<Robot> robotList = new List<Robot>();
     public List<float[]> goalConfigList = new List<float[]>();
     public List<GameObject> goalGameobjects = new List<GameObject>();
-    private byte[,] bitmap = new byte[130, 130];
     private float UNIT = 8.0f / 128.0f;
     public bool isStarting = false;
 
@@ -64,8 +63,10 @@ public class robotManagerScript : MonoBehaviour
             goalConfigList.Add(newGoal);
     }
 
-    public void initBitmap(int index)
+    public byte[,] initBitmap(int index)
     {
+        byte[,] bitmap = new byte[130, 130];
+
         for (int i = 0; i < 130; i++)
         {
             for (int j = 0; j < 130; j++)
@@ -76,10 +77,10 @@ public class robotManagerScript : MonoBehaviour
                 else if (Physics.Raycast(new Vector3(UNIT / 2.0f + (j - 1) * UNIT, 2.0f, UNIT / 2.0f + (i - 1) * UNIT),
                      Vector3.down, out hit, 1.5f))
                 {
-                    if (hit.collider.tag == "Obstacle")
+                    if (hit.collider.gameObject.transform.parent.tag == "Obstacle")
                     {
                         bitmap[i, j] = 255;
-                        print("Hit " + hit.collider.name + " at" + i + "," + j);
+                        print("Hit " + hit.collider.name + " at (" + i + ", " + j + ")");
                     }
                 }
                 else
@@ -91,20 +92,72 @@ public class robotManagerScript : MonoBehaviour
             }
         }
 
+        //List<Vector2> controls = goalGameobjects[index].GetComponent<robotDetailScript>().getControls();
+
+        return bitmap;
+        //Debug.Log("Complete");
+    }
+
+    private float[] getBitmapGoal(int index)
+    {
         float[] goal = goalGameobjects[index].GetComponent<robotDetailScript>().configuration;
+        float[] configuration = new float[3];
+
         for (int i = 0; i < goalGameobjects[index].GetComponent<robotDetailScript>().getNumControls(); i++)
         {
             Vector2 controlPos = goalGameobjects[index].GetComponent<robotDetailScript>().getControlConfig(i);
             Debug.Log(controlPos);
-            goal[0] += controlPos.x;
-            goal[1] += controlPos.y;
+            //goal[0] += controlPos.x;
+            //goal[1] += controlPos.y;
+            Debug.Log((goal[0] + controlPos.x) + ", " + (goal[1] + controlPos.y));
 
-            bitmap[(int)(goal[0]), (int)(goal[1])] = 0;
+            //bitmap[(int)(goal[0] + controlPos.x), (int)(goal[1] + controlPos.y)] = 0;
         }
-        //List<Vector2> controls = goalGameobjects[index].GetComponent<robotDetailScript>().getControls();
-        
-        
-        //Debug.Log("Complete");
+
+        return configuration;
+    }
+
+    public void NF1(int index)
+    {
+        byte[,] bitmap = initBitmap(index);
+        const byte M = 254;
+        List<float[]>[] configList = new List<float[]>[255]; //Li, i=0,1,...,254, is a list of configurations; it is initially empty.
+        float[] goal = getBitmapGoal(index);
+
+        //U(goal)=0; insert goal in L0
+        bitmap[(int)(goal[0]), (int)(goal[1])] = 0;
+        configList[0].Add(goal);
+
+        //for i=0,1, .., until Li is empty do
+        //for every q in Li do
+        for (int i = 0, j = 0; i < 254; j++)
+        {
+            //for every 1-neighbor q' in GCfree do
+            for (int direction = 0; direction < 4; direction++)
+            {
+                float[] q = (configList[i])[j];
+                if (direction == 0)
+                    q[0] += 1;
+                else if (direction == 1)
+                    q[1] -= 1;
+                else if (direction == 2)
+                    q[0] -= 1;
+                else
+                    q[1] += 1;
+
+                // if U(q') = M then
+                if (bitmap[(int)(q[0]), (int)(q[1])] == M)
+                {
+                    //U(q') = i+1
+                    bitmap[(int)(q[0]), (int)(q[1])] = (byte)(i + 1);
+                    //insert q' at the end of Li+1
+                    configList[i + 1].Add(q);
+                }
+            }
+
+            //until Li is empty
+            if (j == configList[i].Count - 1) i++; j = 0;
+        }
     }
 
     public void resolvePotential()

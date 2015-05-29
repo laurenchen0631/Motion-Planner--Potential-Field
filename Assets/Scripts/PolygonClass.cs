@@ -213,9 +213,11 @@ public class Polygon
         }
         
         #endregion
+
         mesh.vertices = vertices;
         mesh.normals = normals;
         mesh.triangles = triangles;
+        //mesh.RecalculateNormals();
         mesh.RecalculateBounds();
         mesh.Optimize();
 
