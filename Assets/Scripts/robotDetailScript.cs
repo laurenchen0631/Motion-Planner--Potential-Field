@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class robotDetailScript : MonoBehaviour {
 
-    public float[] configuration = new float[3];
+    public Configuration configuration = new Configuration();
+    public float[] debugConfigs = new float[3];
     private const float UNIT = 1.0f / 16.0f;
     public List<Vector2> controlList = new List<Vector2>();
 	// Use this for initialization
@@ -13,11 +14,16 @@ public class robotDetailScript : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         Transform trans = gameObject.transform;
-        configuration[0] = trans.position[0] / UNIT;
-        configuration[1] = trans.position[2] / UNIT;
-        configuration[2] = trans.rotation.eulerAngles[1];
+        configuration.x = trans.position[0] / UNIT;
+        configuration.y = trans.position[2] / UNIT;
+        configuration.theta = trans.rotation.eulerAngles[1];
+
+        debugConfigs[0] = configuration.x;
+        debugConfigs[1] = configuration.y;
+        debugConfigs[2] = configuration.theta;
 	}
 
     public void setControls(List<Vector2> controls)
@@ -35,12 +41,19 @@ public class robotDetailScript : MonoBehaviour {
         return controlList.Count;
     }
 
-    public Vector2 getControlConfig(int index) 
+    public Vector2 getControlPos(int index, bool global) 
     {
-        float sin = Mathf.Sin(configuration[2] * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(configuration[2] * Mathf.Deg2Rad);
-        Vector2 control = controlList[index];
+        if (index >= getNumControls())
+            return new Vector2();
 
-        return new Vector2(cos * control.x - sin * control.y, cos * control.y - sin * control.x);
+        float sin = Mathf.Sin(configuration.theta * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(configuration.theta * Mathf.Deg2Rad);
+        Vector2 control = controlList[index];
+        Vector2 controlConfig = new Vector2(cos * control.x - sin * control.y, cos * control.y - sin * control.x);
+
+        if (global)
+            return new Vector2(configuration.x + controlConfig.x, configuration.y + controlConfig.y);
+        else
+            return controlConfig;
     }
 }

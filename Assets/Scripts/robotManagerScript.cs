@@ -6,16 +6,11 @@ public class robotManagerScript : MonoBehaviour
 {
     private int numOfRobot = 0;
     private List<Robot> robotList = new List<Robot>();
-    public List<float[]> goalConfigList = new List<float[]>();
+    public List<Configuration> goalConfigList = new List<Configuration>();
     public List<GameObject> goalGameobjects = new List<GameObject>();
     private float UNIT = 8.0f / 128.0f;
     public bool isStarting = false;
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    byte[,] obstacleBitmap = new byte[130, 130];
 
     public void drawRobots()
     {
@@ -39,12 +34,12 @@ public class robotManagerScript : MonoBehaviour
         go.transform.parent = this.gameObject.transform;
         go.transform.localScale = new Vector3(UNIT, 0.5f, UNIT);
 
-        float[] configuration = goalConfigList[index];
-        go.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
-        go.transform.Rotate(Vector3.up * -configuration[2]);
+        Configuration configuration = goalConfigList[index];
+        go.transform.position = new Vector3(configuration.x * UNIT, 0, configuration.y * UNIT);
+        go.transform.Rotate(Vector3.up * -configuration.theta);
 
-        robotDetailScript script = go.AddComponent<robotDetailScript>();
-        script.setControls(robotList[index].getControls());
+        //robotDetailScript script = go.AddComponent<robotDetailScript>();
+        //script.setControls(robotList[index].getControls());
 
         foreach (MeshRenderer render in goalGameobjects[index].GetComponentsInChildren<MeshRenderer>())
             render.material.color = Color.blue;
@@ -60,9 +55,10 @@ public class robotManagerScript : MonoBehaviour
     public void addGoal(float[] newGoal)
     {
         if (newGoal.Length == 3)
-            goalConfigList.Add(newGoal);
+            goalConfigList.Add(new Configuration(newGoal[0], newGoal[1], newGoal[2]));
     }
 
+    /*
     public byte[,] initBitmap(int index)
     {
         byte[,] bitmap = new byte[130, 130];
@@ -97,35 +93,38 @@ public class robotManagerScript : MonoBehaviour
         return bitmap;
         //Debug.Log("Complete");
     }
+    */
 
-    private float[] getBitmapGoal(int index)
+    private List<Configuration> getGoalConfigs(int index)
     {
-        float[] goal = goalGameobjects[index].GetComponent<robotDetailScript>().configuration;
-        float[] configuration = new float[3];
+        robotDetailScript robot = goalGameobjects[index].GetComponent<robotDetailScript>();
+        Configuration goal = robot.configuration;
+        List<Configuration> goalConfigList = new List<Configuration>();
 
-        for (int i = 0; i < goalGameobjects[index].GetComponent<robotDetailScript>().getNumControls(); i++)
+        for (int i = 0; i < robot.getNumControls(); i++)
         {
-            Vector2 controlPos = goalGameobjects[index].GetComponent<robotDetailScript>().getControlConfig(i);
-            Debug.Log(controlPos);
-            //goal[0] += controlPos.x;
-            //goal[1] += controlPos.y;
-            Debug.Log((goal[0] + controlPos.x) + ", " + (goal[1] + controlPos.y));
-
-            //bitmap[(int)(goal[0] + controlPos.x), (int)(goal[1] + controlPos.y)] = 0;
+            Vector2 controlPos = robot.getControlPos(i, true);
+            Configuration config = new Configuration(controlPos.x, controlPos.y, goal.theta);
+            goalConfigList.Add(config);
         }
 
-        return configuration;
+        return goalConfigList;
     }
 
-    public void NF1(int index)
+    private Configuration getOriginGoal(int index)
     {
-        byte[,] bitmap = initBitmap(index);
-        const byte M = 254;
-        List<float[]>[] configList = new List<float[]>[255]; //Li, i=0,1,...,254, is a list of configurations; it is initially empty.
-        float[] goal = getBitmapGoal(index);
+        return goalGameobjects[index].GetComponent<robotDetailScript>().configuration;
+    }
 
+    public byte[,] NF1(Configuration goal)
+    {
+        byte[,] bitmap = new byte[130, 130];
+        System.Array.Copy(obstacleBitmap, bitmap, obstacleBitmap.Length);
+        const byte M = 254;
+        List<Configuration>[] configList = new List<Configuration>[255]; //Li, i=0,1,...,254, is a list of configurations; it is initially empty.
+        
         //U(goal)=0; insert goal in L0
-        bitmap[(int)(goal[0]), (int)(goal[1])] = 0;
+        bitmap[(int)goal.x, (int)goal.y] = 0;
         configList[0].Add(goal);
 
         //for i=0,1, .., until Li is empty do
@@ -135,21 +134,17 @@ public class robotManagerScript : MonoBehaviour
             //for every 1-neighbor q' in GCfree do
             for (int direction = 0; direction < 4; direction++)
             {
-                float[] q = (configList[i])[j];
-                if (direction == 0)
-                    q[0] += 1;
-                else if (direction == 1)
-                    q[1] -= 1;
-                else if (direction == 2)
-                    q[0] -= 1;
-                else
-                    q[1] += 1;
+                Configuration q = (configList[i])[j];
+                if (direction == 0) q.x += 1; //Right
+                else if (direction == 1) q.y -= 1;//Down
+                else if (direction == 2) q.x -= 1;//Left
+                else q.y += 1;// Up    
 
                 // if U(q') = M then
-                if (bitmap[(int)(q[0]), (int)(q[1])] == M)
+                if (bitmap[(int)q.x, (int)q.y] == M)
                 {
                     //U(q') = i+1
-                    bitmap[(int)(q[0]), (int)(q[1])] = (byte)(i + 1);
+                    bitmap[(int)(1f + q.x), (int)(1f + q.y)] = (byte)(i + 1);
                     //insert q' at the end of Li+1
                     configList[i + 1].Add(q);
                 }
@@ -158,11 +153,106 @@ public class robotManagerScript : MonoBehaviour
             //until Li is empty
             if (j == configList[i].Count - 1) i++; j = 0;
         }
+
+        return bitmap;
+    }
+
+    private int[,] Arbitration(int index)
+    {
+        List<Configuration> goals = getGoalConfigs(index);
+        List<byte[,]> bitmaps = new List<byte[,]>();
+        int[,] BITMAP = new int[130, 130];
+
+        //Select s control point pi in A.
+        //For every point pi compute a local-minimum-free potential Vi(x) over the workspace, with a global minimum at pi(qgoal).
+        for (int i = 0; i < goals.Count; i++)
+            bitmaps.Add( NF1(goals[i]) );
+
+        //The overall potential value U is computed by composing the potential values from p1 to pn
+        for (int i = 0; i < 130; i++)
+        {
+            for (int j = 0; j < 130; j++)
+            {
+                for (int n = 0; n < bitmaps.Count; n++)
+                    BITMAP[i, j] += (int)(bitmaps[n])[i, j];
+            }
+        }
+
+        return BITMAP;
+    }
+
+    private void BFS(int[,] bitmap, Configuration start, Configuration goal)
+    {
+        int[,] BITMAP = bitmap;
+        const int M = 510;
+        //install Xinit in T; [initially, T is the empty tree]
+        Configuration initX = goal;
+        NTree<Configuration> T = new NTree<Configuration>(initX);
+
+        //INSERT(Xinit, OPEN); mark Xinit visited;
+        //[initially, all the points in the grid are marked “unvisited”]
+        LinkedList<Configuration>[] OPEN = new LinkedList<Configuration>[512];
+        bool[,] isVisited = new bool[130, 130];
+        int _index = BITMAP[(int)(1 + initX.x), (int)(1 + initX.y)];
+        OPEN[_index].AddFirst(initX);
+        isVisited[(int)initX.x, (int)initX.y] = true;
+        
+        //SUCCESS ← false;
+        bool SUCCESS = false;
+
+        //while ┐ EMPTY(OPEN) and ┐SUCCESS do
+        while (!EMPTY<Configuration>(OPEN) && !SUCCESS)
+        {
+            //x ← FIRST(OPEN);
+            LinkedListNode<Configuration> x = OPEN[_index].First;
+            //OPEN[_index++].RemoveFirst();
+            
+            //for every neighbor x’ of x in the grid do
+            for (int direction = 0; direction < 4; direction++)
+            {
+                Configuration y = new Configuration(x.Value.x, x.Value.y, x.Value.theta);
+                if (direction == 0)         y.x += 1; //Right
+                else if (direction == 1)    y.y -= 1; //Down
+                else if (direction == 2)    y.x -= 1; //Left
+                else                        y.y += 1; // Up
+
+                //if U(x’) < M and x’ is not visited then
+                if (BITMAP[(int)(1 + y.x), (int)(1 + y.y)] < M && !isVisited[(int)y.x, (int)y.y])
+                {
+                    //install x’ in T with a pointer toward x;
+                    
+                    //INSERT(x’, OPEN); mark x’ visited;
+                    //OPEN[_index].AddFirst(y);
+                    isVisited[(int)y.x, (int)y.y] = true;
+
+                    //if x’ = Xgoal then SUCCESS ← true;
+                    if (BITMAP[(int)(1 + y.x), (int)(1 + y.y)] == 0)
+                        SUCCESS = true;
+                }
+            }
+        }
+
+        //if SUCCESS then
+        //    return the constructed path by tracing the pointers in T from xgoal back to xinit
+        //else return failure;
+
+    }
+
+    private bool EMPTY<T>(LinkedList<T>[] OPEN)
+    {
+        for (int i = 0; i < OPEN.Length; i++)
+            if (OPEN[i].Count != 0) return false;
+        return true;
     }
 
     public void resolvePotential()
     {
-        initBitmap(0);
+        obstacleBitmap = GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().initBitmap();
+
+        for (int i = 0; i < numOfRobot; i++)
+        {
+            BFS(Arbitration(i), robotList[i].getConfiguration(), getOriginGoal(i));
+        }
     }
 }
 
@@ -174,7 +264,7 @@ public class Robot
     private int numOfControl = 0;
     private List<Vector2> controlList = new List<Vector2>();
 
-    public float[] configuration = new float[3] { 0.0f, 0.0f, 0.0f };
+    private Configuration configuration = new Configuration();
 
     public GameObject gameobject = new GameObject();
     private float UNIT = 8.0f / 128.0f;
@@ -207,11 +297,14 @@ public class Robot
         newPolygon.gameobject.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
-    public void updateConfiguration()
+    public Configuration getConfiguration()
     {
-        configuration[0] = gameobject.transform.position.x / UNIT;
-        configuration[1] = gameobject.transform.position.y / UNIT;
-        configuration[2] = 360 - gameobject.transform.rotation.y;
+        return gameobject.GetComponent<robotDetailScript>().configuration;
+    }
+
+    public void setConfiguration(float[] config)
+    {
+        configuration.setConfig(config[0], config[1], config[2]);
     }
 
     public void addControlPoint(Vector2 newPoint)
@@ -244,8 +337,8 @@ public class Robot
     public void applyTransform()
     {
         gameobject.transform.localScale = new Vector3(UNIT, 1, UNIT);
-        gameobject.transform.position = new Vector3(configuration[0] * UNIT, 0, configuration[1] * UNIT);
-        gameobject.transform.Rotate(Vector3.up * -configuration[2]);
+        gameobject.transform.position = new Vector3(configuration.x * UNIT, 0, configuration.y * UNIT);
+        gameobject.transform.Rotate(Vector3.up * -configuration.theta);
     }
 
     private void ChangeLayers(Transform trans)
@@ -286,6 +379,8 @@ public class Robot
             polygonList[i].threeDMesh(Color.red);
 
         gameobject.name = "Robot " + index.ToString();
+        robotDetailScript script = gameobject.AddComponent<robotDetailScript>();
+        script.setControls(controlList);
         ChangeLayers(gameobject.transform);
         setupRigidbody();
         applyTransform();
@@ -299,5 +394,78 @@ public class Robot
         gameobject.name = "Robot " + index.ToString();
         setupCollider();
         applyTransform();
+    }
+}
+
+delegate void TreeVisitor<T>(T nodeData);
+
+class NTree<T>
+{
+    private T data;
+    private LinkedList<NTree<T>> children;
+    private NTree<T> parent;
+
+    public NTree(T data)
+    {
+        this.data = data;
+        children = new LinkedList<NTree<T>>();
+    }
+
+    public NTree(T data, NTree<T> parent)
+    {
+        this.data = data;
+        this.parent = parent;
+        children = new LinkedList<NTree<T>>();
+    }
+
+    public void AddChild(T data)
+    {
+        children.AddFirst(new NTree<T>(data));
+    }
+
+    public NTree<T> GetChild(int i)
+    {
+        foreach (NTree<T> n in children)
+            if (--i == 0)
+                return n;
+        return null;
+    }
+
+    public void Traverse(NTree<T> node, TreeVisitor<T> visitor)
+    {
+        visitor(node.data);
+        foreach (NTree<T> kid in node.children)
+            Traverse(kid, visitor);
+    }
+}
+
+class potentialNode
+{
+    byte potential;
+}
+
+public class Configuration
+{
+    public float x;
+    public float y;
+    public float theta;
+
+    public Configuration()
+    {
+        x = 0;
+        y = 0;
+        theta = 0;
+    }
+
+    public Configuration(float x, float y, float theta)
+    {
+        setConfig(x, y, theta);
+    }
+
+    public void setConfig(float x,float y,float theta)
+    {
+        this.x = x;
+        this.y = y;
+        this.theta = theta;
     }
 }

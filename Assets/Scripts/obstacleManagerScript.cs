@@ -6,12 +6,7 @@ public class obstacleManagerScript : MonoBehaviour
 {
     private int numOfObstacle               = 0;
     private List<Obstacle> obstacleList     = new List<Obstacle>();
-
-    // Update is called once per frame 
-    void Update()
-    {
-       
-    }
+    private float UNIT                      = 8.0f / 128.0f;
 
     public void drawObstacles()
     {
@@ -26,9 +21,34 @@ public class obstacleManagerScript : MonoBehaviour
         newObstacle.gameobject.transform.parent = this.gameObject.transform;
     }
 
-    static public void setObstacle(int index, Obstacle newObstacle)
+    public byte[,] initBitmap()
     {
+        byte[,] bitmap = new byte[130, 130];
 
+        for (int i = 0; i < 130; i++)
+        {
+            for (int j = 0; j < 130; j++)
+            {
+                RaycastHit hit;
+                if (i == 0 | j == 0 | i == 129 | j == 129)
+                    bitmap[i, j] = 255;
+                else if (Physics.Raycast(new Vector3(UNIT / 2.0f + (j - 1) * UNIT, 2.0f, UNIT / 2.0f + (i - 1) * UNIT),
+                     Vector3.down, out hit, 1.5f))
+                {
+                    if (hit.collider.gameObject.transform.parent.tag == "Obstacle")
+                    {
+                        bitmap[i, j] = 255;
+                        //print("Hit " + hit.collider.name + " at (" + i + ", " + j + ")");
+                    }
+                }
+                else
+                {
+                    bitmap[i, j] = 254;
+                }
+            }
+        }
+
+        return bitmap;
     }
 }
 
