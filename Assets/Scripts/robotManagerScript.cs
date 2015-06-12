@@ -121,37 +121,40 @@ public class robotManagerScript : MonoBehaviour
         byte[,] bitmap = new byte[130, 130];
         System.Array.Copy(obstacleBitmap, bitmap, obstacleBitmap.Length);
         const byte M = 254;
-        List<Configuration>[] configList = new List<Configuration>[255]; //Li, i=0,1,...,254, is a list of configurations; it is initially empty.
-        
+        Queue<Configuration>[] configList = new Queue<Configuration>[255]; //Li, i=0,1,...,254, is a list of configurations; it is initially empty.
+        for (int i = 0; i < 255; i++) configList[i] = new Queue<Configuration>();
+
         //U(goal)=0; insert goal in L0
-        bitmap[(int)goal.x, (int)goal.y] = 0;
-        configList[0].Add(goal);
+        bitmap[(int)(1f + goal.x), (int)(1f + goal.y)] = 0;
+        configList[0].Enqueue(goal);
 
         //for i=0,1, .., until Li is empty do
         //for every q in Li do
-        for (int i = 0, j = 0; i < 254; j++)
+        for (int i = 0; i < 254 && configList[i].Count > 0; )
         {
+            Configuration point = configList[i].Dequeue();
+
             //for every 1-neighbor q' in GCfree do
             for (int direction = 0; direction < 4; direction++)
             {
-                Configuration q = (configList[i])[j];
-                if (direction == 0) q.x += 1; //Right
-                else if (direction == 1) q.y -= 1;//Down
-                else if (direction == 2) q.x -= 1;//Left
-                else q.y += 1;// Up    
+                Configuration q = new Configuration(point);
+                if (direction == 0) q.x += 1f; //Right
+                else if (direction == 1) q.y -= 1f;//Down
+                else if (direction == 2) q.x -= 1f;//Left
+                else q.y += 1f;//Up
 
                 // if U(q') = M then
-                if (bitmap[(int)q.x, (int)q.y] == M)
+                if (bitmap[(int)(1f + q.x), (int)(1f + q.y)] == M)
                 {
                     //U(q') = i+1
                     bitmap[(int)(1f + q.x), (int)(1f + q.y)] = (byte)(i + 1);
                     //insert q' at the end of Li+1
-                    configList[i + 1].Add(q);
+                    configList[i + 1].Enqueue(q);
                 }
             }
 
             //until Li is empty
-            if (j == configList[i].Count - 1) i++; j = 0;
+            if (configList[i].Count == 0) { i++; /*print("i:" + i + ", Count: " + configList[i].Count);*/ }
         }
 
         return bitmap;
@@ -174,7 +177,7 @@ public class robotManagerScript : MonoBehaviour
             for (int j = 0; j < 130; j++)
             {
                 for (int n = 0; n < bitmaps.Count; n++)
-                    BITMAP[i, j] += (int)(bitmaps[n])[i, j];
+                    BITMAP[i, j] += (int)(bitmaps[n][i, j]);
             }
         }
 
@@ -251,7 +254,8 @@ public class robotManagerScript : MonoBehaviour
 
         for (int i = 0; i < numOfRobot; i++)
         {
-            BFS(Arbitration(i), robotList[i].getConfiguration(), getOriginGoal(i));
+            Arbitration(i);
+            //BFS(Arbitration(i), robotList[i].getConfiguration(), getOriginGoal(i));
         }
     }
 }
@@ -353,6 +357,7 @@ public class Robot
     private void setupRigidbody()
     {
         Rigidbody rigid = gameobject.AddComponent<Rigidbody>();
+        rigid.useGravity = false;
         rigid.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
@@ -455,6 +460,13 @@ public class Configuration
         x = 0;
         y = 0;
         theta = 0;
+    }
+
+    public Configuration(Configuration copy)
+    {
+        this.x = copy.x;
+        this.y = copy.y;
+        this.theta = copy.theta;
     }
 
     public Configuration(float x, float y, float theta)
