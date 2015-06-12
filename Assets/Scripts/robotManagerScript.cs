@@ -357,7 +357,6 @@ public class Robot
     private void setupRigidbody()
     {
         Rigidbody rigid = gameobject.AddComponent<Rigidbody>();
-        rigid.useGravity = false;
         rigid.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
