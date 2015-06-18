@@ -18,6 +18,8 @@ public class objectEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().isStarting) return;
+
         if (!isWithin && Input.GetMouseButtonDown(0))
             isSelected = false;
 
@@ -30,14 +32,6 @@ public class objectEditor : MonoBehaviour
                 Vector3 nowPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 leftClickPos = Camera.main.ScreenToWorldPoint(leftClickPos);
                 Vector3 offset = nowPos - leftClickPos;
-                //Vector3 trans = gameObject.transform.position;
-                //trans.y = 0;
-
-                //Vector3 direction = offset.normalized * 5;
-                //float sqrMag = offset.sqrMagnitude;
-
-                //gameObject.GetComponent<Rigidbody>().MovePosition(trans + offset);
-                //if(sqrMag > 0 )
 
                 Vector3 targetPosition = transform.position += new Vector3(offset.x, 0, offset.z);
                 //gameObject.transform.Translate(offset.x, 0, offset.z, Space.World);
@@ -59,7 +53,6 @@ public class objectEditor : MonoBehaviour
 
                 
                 gameObject.transform.Rotate(0, angle, 0);
-                //gameObject.GetComponent<Rigidbody>().MoveRotation(Quaternion.AngleAxis(transform.rotation.eulerAngles.y + angle, Vector3.up));
                 rightClickPos = Input.mousePosition;
             }
         }

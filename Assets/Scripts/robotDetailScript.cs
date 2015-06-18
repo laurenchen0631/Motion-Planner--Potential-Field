@@ -8,10 +8,6 @@ public class robotDetailScript : MonoBehaviour {
     public float[] debugConfigs = new float[3];
     private const float UNIT = 1.0f / 16.0f;
     public List<Vector2> controlList = new List<Vector2>();
-	// Use this for initialization
-	void Start () {
-	
-	}
 	
 	// Update is called once per frame
 	void Update ()

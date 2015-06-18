@@ -135,9 +135,9 @@ public class Polygon
         for (int i = 0; i < numOfVertices; i++)
         {
             point[i] = new Vector3(Vertices[numOfVertices - 1 - i].x, 1.0f, Vertices[numOfVertices - 1 - i].y);
-            point[numOfVertices + i] = new Vector3(Vertices[numOfVertices - 1 - i].x, 0.0f, Vertices[numOfVertices - 1 - i].y);
-            
+            point[numOfVertices + i] = new Vector3(Vertices[numOfVertices - 1 - i].x, 0.0f, Vertices[numOfVertices - 1 - i].y);   
         }
+
         #region Vertices and normals
         Vector3[] vertices = new Vector3[numOfVertices * 2 + 4 * numOfVertices];
         Vector3[] normals = new Vector3[vertices.Length];

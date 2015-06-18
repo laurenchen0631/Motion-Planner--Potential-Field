@@ -38,7 +38,7 @@ public class obstacleManagerScript : MonoBehaviour
                     if (hit.collider.gameObject.transform.parent.tag == "Obstacle")
                     {
                         bitmap[i, j] = 255;
-                        //print("Hit " + hit.collider.name + " at (" + j + ", " + i + ")");
+                        print("Hit " + hit.collider.name + " at (" + j + ", " + i + ")");
                     }
                 }
                 else
