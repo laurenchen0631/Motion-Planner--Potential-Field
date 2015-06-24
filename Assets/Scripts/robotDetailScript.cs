@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class robotDetailScript : MonoBehaviour {
 
     public Configuration configuration = new Configuration();
-    public float[] debugConfigs = new float[3];
     private const float UNIT = 1.0f / 16.0f;
     public List<Vector2> controlList = new List<Vector2>();
 	
@@ -16,10 +15,6 @@ public class robotDetailScript : MonoBehaviour {
         configuration.x = trans.position[0] / UNIT;
         configuration.y = trans.position[2] / UNIT;
         configuration.theta = trans.rotation.eulerAngles[1];
-
-        debugConfigs[0] = configuration.x;
-        debugConfigs[1] = configuration.y;
-        debugConfigs[2] = configuration.theta;
 	}
 
     public void setControls(List<Vector2> controls)

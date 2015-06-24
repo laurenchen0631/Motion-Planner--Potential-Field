@@ -18,12 +18,12 @@ public class objectEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().isStarting) return;
+        //if (GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().isStarting) return;
 
         if (!isWithin && Input.GetMouseButtonDown(0))
             isSelected = false;
 
-        if (isSelected && !(GameObject.Find("Robot Manager").GetComponent<robotManagerScript>().isStarting) )
+        if (isSelected )
         {
             text.text = "(" + transform.position.x * 16f + ", " + transform.position.z * 16f + ", " + transform.rotation.eulerAngles.y + ")";
             // button values are 0 for left button, 1 for right button, 2 for the middle button.

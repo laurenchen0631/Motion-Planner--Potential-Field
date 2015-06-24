@@ -98,13 +98,13 @@ public class robotManagerScript : MonoBehaviour
     private List<Configuration> getGoalConfigs(int index)
     {
         robotDetailScript robot = goalGameobjects[index].GetComponent<robotDetailScript>();
-        Configuration goal = robot.configuration;
+        //Configuration goal = robot.configuration;
         List<Configuration> goalConfigList = new List<Configuration>();
 
         for (int i = 0; i < robot.getNumControls(); i++)
         {
             Vector2 controlPos = robot.getControlPos(i, true);
-            Configuration config = new Configuration(controlPos.x, controlPos.y, goal.theta);
+            Configuration config = new Configuration(controlPos.x, controlPos.y, robot.configuration.theta);
             goalConfigList.Add(config);
         }
 
@@ -125,7 +125,7 @@ public class robotManagerScript : MonoBehaviour
         for (int i = 0; i < 255; i++) configList[i] = new Queue<Configuration>();
 
         //U(goal)=0; insert goal in L0
-        bitmap[(int)(1f + goal.x), (int)(1f + goal.y)] = 0;
+        bitmap[Mathf.FloorToInt(1f + goal.y), Mathf.FloorToInt(1f + goal.x)] = 0;
         configList[0].Enqueue(goal);
 
         //for i=0,1, .., until Li is empty do
@@ -142,12 +142,14 @@ public class robotManagerScript : MonoBehaviour
                 else if (direction == 1) q.y -= 1f;//Down
                 else if (direction == 2) q.x -= 1f;//Left
                 else q.y += 1f;//Up
-
+                
                 // if U(q') = M then
-                if (bitmap[(int)(1f + q.x), (int)(1f + q.y)] == M)
+                if (bitmap[Mathf.FloorToInt(1f + q.y), Mathf.FloorToInt(1f + q.x)] == M)
                 {
                     //U(q') = i+1
-                    bitmap[(int)(1f + q.x), (int)(1f + q.y)] = (byte)(i + 1);
+                    bitmap[Mathf.FloorToInt(1f + q.y), Mathf.FloorToInt(1f + q.x)] = (byte)(i + 1);
+                    //if(i<5)
+                    //    Debug.Log("bitmap[" + Mathf.FloorToInt(q.y) + "," + Mathf.FloorToInt(q.x) + "] = " + (i + 1));
                     //insert q' at the end of Li+1
                     configList[i + 1].Enqueue(q);
                 }
@@ -171,6 +173,11 @@ public class robotManagerScript : MonoBehaviour
         for (int i = 0; i < goals.Count; i++)
             bitmaps.Add( NF1(goals[i]) );
 
+        for (int i = 0; i < goals.Count; i++)
+            print("(" + goals[i].x + "," + goals[i].y + ")");
+
+        GameObject.Find("Canva Bound").GetComponent<drawBitmap>().draw(bitmaps[0]);
+
         //The overall potential value U is computed by composing the potential values from p1 to pn
         for (int i = 0; i < 130; i++)
         {
@@ -188,14 +195,16 @@ public class robotManagerScript : MonoBehaviour
     {
         int[,] BITMAP = bitmap;
         const int M = 510;
+        LinkedList<Configuration>[] OPEN = new LinkedList<Configuration>[512];
+        for (int i = 0; i < OPEN.Length; i++) OPEN[i] = new LinkedList<Configuration>();
+        bool[,] isVisited = new bool[128, 128];
+
         //install Xinit in T; [initially, T is the empty tree]
         Configuration initX = goal;
         NTree<Configuration> T = new NTree<Configuration>(initX);
 
         //INSERT(Xinit, OPEN); mark Xinit visited;
         //[initially, all the points in the grid are marked “unvisited”]
-        LinkedList<Configuration>[] OPEN = new LinkedList<Configuration>[512];
-        bool[,] isVisited = new bool[130, 130];
         int _index = BITMAP[(int)(1 + initX.x), (int)(1 + initX.y)];
         OPEN[_index].AddFirst(initX);
         isVisited[(int)initX.x, (int)initX.y] = true;
@@ -252,10 +261,11 @@ public class robotManagerScript : MonoBehaviour
     {
         isStarting = true;
         obstacleBitmap = GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().initBitmap();
+        Arbitration(0);
 
         for (int i = 0; i < numOfRobot; i++)
         {
-            Arbitration(i);
+            //Arbitration(i);
             //BFS(Arbitration(i), robotList[i].getConfiguration(), getOriginGoal(i));
         }
     }

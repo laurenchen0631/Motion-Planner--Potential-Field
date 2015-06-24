@@ -141,7 +141,7 @@ public class Polygon
         #region Vertices and normals
         Vector3[] vertices = new Vector3[numOfVertices * 2 + 4 * numOfVertices];
         Vector3[] normals = new Vector3[vertices.Length];
-        Vector2[] uv = new Vector2[vertices.Length];
+        //Vector2[] uv = new Vector2[vertices.Length];
         
         for (int i = 0; i < numOfVertices; i++)
         {
