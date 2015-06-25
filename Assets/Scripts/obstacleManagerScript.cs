@@ -8,19 +8,6 @@ public class obstacleManagerScript : MonoBehaviour
     private List<Obstacle> obstacleList     = new List<Obstacle>();
     private float UNIT                      = 8.0f / 128.0f;
 
-    public void Start()
-    {
-        
-    }
-
-    public void onGUI()
-    {
-        Texture2D tx2DFlash = new Texture2D(1, 1); //Creates 2D texture
-        tx2DFlash.SetPixel(1, 1, Color.blue); //Sets the 1 pixel to be white
-        tx2DFlash.Apply(); //Applies all the changes made
-        GUI.DrawTexture(new Rect(0, 0, Screen.width,Screen.height), tx2DFlash); //Draws the texture for the entire screen (width, height)
-    }
-
     public void drawObstacles()
     {
         for (int i = 0; i < numOfObstacle; i++)
@@ -42,6 +29,8 @@ public class obstacleManagerScript : MonoBehaviour
         {
             for (int j = 0; j < 130; j++)
             {
+                bitmap[i, j] = 254;
+
                 RaycastHit hit;
                 if (i == 0 | j == 0 | i == 129 | j == 129)
                     bitmap[i, j] = 255;
@@ -53,12 +42,6 @@ public class obstacleManagerScript : MonoBehaviour
                         bitmap[i, j] = 255;
                         //print("Hit " + hit.collider.name + " at (" + j + ", " + i + ")");
                     }
-                    else
-                        bitmap[i, j] = 254;
-                }
-                else
-                {
-                    bitmap[i, j] = 254;
                 }
             }
         }

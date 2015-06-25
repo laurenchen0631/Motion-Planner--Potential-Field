@@ -40,10 +40,20 @@ public class drawBitmap : MonoBehaviour {
             //print("(" + _bitValue + "," + _bitValue / 256f + ")");
             for (int j = 0; j < 128; j++)
             {
-                float bitValue = bitmap[Mathf.FloorToInt(i + 1), Mathf.FloorToInt(j + 1)];
+                float bitValue = bitmap[i + 1, j + 1];
+                //Color co = Color.white;
+                //if (bitValue < 64)
+                //    co = Color.red;
+                //else if (bitValue < 128)
+                //    co = Color.blue;
+                //else if (bitValue < 192)
+                //    co = Color.green;
+                //else
+                //    co = Color.black;
                 
                 //print("(" + bitValue + "," + bitValue / 256f + ")");
                 texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), new Color(1f - bitValue / 256f, 1f-bitValue / 256f, 1f-bitValue / 256f));
+                //texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), co);
             }
         }
         texture.Apply();

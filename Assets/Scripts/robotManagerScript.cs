@@ -173,8 +173,8 @@ public class robotManagerScript : MonoBehaviour
         for (int i = 0; i < goals.Count; i++)
             bitmaps.Add( NF1(goals[i]) );
 
-        for (int i = 0; i < goals.Count; i++)
-            print("(" + goals[i].x + "," + goals[i].y + ")");
+        //for (int i = 0; i < goals.Count; i++)
+        //    print("(" + goals[i].x + "," + goals[i].y + ")");
 
         GameObject.Find("Canva Bound").GetComponent<drawBitmap>().draw(bitmaps[0]);
 
