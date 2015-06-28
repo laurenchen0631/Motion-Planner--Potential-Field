@@ -5,28 +5,6 @@ using ProtoTurtle.BitmapDrawing;
 
 public class drawBitmap : MonoBehaviour {
 
-    void Start()
-    {
-
-        //Material material = GetComponent<Renderer>().material;
-        //Texture2D texture = new Texture2D(512, 512, TextureFormat.RGB24, false);
-        //texture.wrapMode = TextureWrapMode.Clamp;
-        //material.SetTexture(0, texture);
-
-        //texture.DrawFilledRectangle(new Rect(0, 0, 120, 120), Color.green);
-
-        //texture.DrawRectangle(new Rect(0, 0, 120, 60), Color.red);
-
-        //texture.DrawCircle(256, 256, 100, Color.cyan);
-        //texture.DrawFilledCircle(256, 256, 50, Color.grey);
-
-        //texture.DrawCircle(0, 0, 512, Color.red);
-
-        //texture.DrawLine(new Vector2(120, 60), new Vector2(256, 256), Color.black);
-
-        //texture.Apply();
-    }
-
     public void draw(byte[,] bitmap)
     {
         Material material = GetComponent<Renderer>().material;
@@ -36,30 +14,28 @@ public class drawBitmap : MonoBehaviour {
 
         for (int i = 0; i < 128; i++)
         {
-            //float _bitValue = bitmap[(int)i + 1, (int)1];
-            //print("(" + _bitValue + "," + _bitValue / 256f + ")");
             for (int j = 0; j < 128; j++)
             {
                 float bitValue = bitmap[i + 1, j + 1];
-                //Color co = Color.white;
-                //if (bitValue < 64)
-                //    co = Color.red;
-                //else if (bitValue < 128)
-                //    co = Color.blue;
-                //else if (bitValue < 192)
-                //    co = Color.green;
-                //else
-                //    co = Color.black;
+                Color co = Color.white;
+                if (bitValue < 64)
+                    co = new Color(bitValue / 64f, 0, 0);
+                else if (bitValue < 128)
+                    co = new Color(0, bitValue / 128f, 0);
+                else if (bitValue < 192)
+                    co = new Color(0, 0, bitValue / 192f);
+                else
+                    co = new Color(1f - bitValue / 256f, 1f - bitValue / 256f, 1f - bitValue / 256f);
                 
                 //print("(" + bitValue + "," + bitValue / 256f + ")");
-                texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), new Color(1f - bitValue / 256f, 1f-bitValue / 256f, 1f-bitValue / 256f));
-                //texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), co);
+                //texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), new Color(1f - bitValue / 256f, 1f-bitValue / 256f, 1f-bitValue / 256f));
+                texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), co);
             }
         }
         texture.Apply();
     }
 
-    public void draw(int[,] bitmap)
+    public void draw(int[,] bitmap, int max)
     {
         Material material = GetComponent<Renderer>().material;
         Texture2D texture = new Texture2D(128, 128, TextureFormat.RGB24, false);
@@ -70,9 +46,10 @@ public class drawBitmap : MonoBehaviour {
         {
             for (int j = 0; j < 128; j++)
             {
-                int bitValue = bitmap[(int)i+1,(int)j+1];
-                texture.DrawFilledRectangle(new Rect(i, j, i + 1, j + 1), new Color(bitValue / 256f, bitValue / 256f, bitValue / 256f));
+                float bitValue = bitmap[i + 1, j + 1];
+                texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), new Color(1f - bitValue / max, 1f - bitValue / max, 1f - bitValue / max));
             }
         }
+        texture.Apply();
     }
 }

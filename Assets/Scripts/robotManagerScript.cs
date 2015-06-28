@@ -176,7 +176,7 @@ public class robotManagerScript : MonoBehaviour
         //for (int i = 0; i < goals.Count; i++)
         //    print("(" + goals[i].x + "," + goals[i].y + ")");
 
-        GameObject.Find("Canva Bound").GetComponent<drawBitmap>().draw(bitmaps[0]);
+        //GameObject.Find("Canva Bound").GetComponent<drawBitmap>().draw(bitmaps[0]);
 
         //The overall potential value U is computed by composing the potential values from p1 to pn
         for (int i = 0; i < 130; i++)
@@ -188,94 +188,146 @@ public class robotManagerScript : MonoBehaviour
             }
         }
 
+        GameObject.Find("Canva Bound").GetComponent<drawBitmap>().draw(BITMAP, 510);
+
         return BITMAP;
     }
 
-    private void BFS(int[,] bitmap, Configuration start, Configuration goal)
+    private List<Configuration> BFS(int[,] bitmap, Configuration start, Configuration goal)
     {
-        int[,] BITMAP = bitmap;
         const int M = 510;
-        LinkedList<Configuration>[] OPEN = new LinkedList<Configuration>[512];
-        for (int i = 0; i < OPEN.Length; i++) OPEN[i] = new LinkedList<Configuration>();
+        int END = GetPotential(bitmap, goal);
+        int START = GetPotential(bitmap, start);
+        PotentialNodeComparer comparer = new PotentialNodeComparer();
+        List<potentialNode>[] OPEN = new List<potentialNode>[510];
+        for (int i = 0; i < OPEN.Length; i++) OPEN[i] = new List<potentialNode>();
         bool[,] isVisited = new bool[128, 128];
 
         //install Xinit in T; [initially, T is the empty tree]
-        Configuration initX = goal;
-        NTree<Configuration> T = new NTree<Configuration>(initX);
-
-        //INSERT(Xinit, OPEN); mark Xinit visited;
-        //[initially, all the points in the grid are marked “unvisited”]
-        int _index = BITMAP[(int)(1 + initX.x), (int)(1 + initX.y)];
-        OPEN[_index].AddFirst(initX);
-        isVisited[(int)initX.x, (int)initX.y] = true;
+        NTree<Configuration> T = new NTree<Configuration>(start, null);
+        //INSERT(Xinit, OPEN);
+        potentialNode node = new potentialNode(T, GetPotential(bitmap, start), start.distanceTo(goal));
+        int index_array = START;
+        OPEN[index_array].Add(node);
+        //mark Xinit visited;[initially, all the points in the grid are marked “unvisited”]
+        isVisited[Mathf.FloorToInt(start.x), Mathf.FloorToInt(start.y)] = true;
         
         //SUCCESS ← false;
         bool SUCCESS = false;
+        NTree<Configuration> goalTree = null;
 
         //while ┐ EMPTY(OPEN) and ┐SUCCESS do
-        while (!EMPTY<Configuration>(OPEN) && !SUCCESS)
+        while (/*!EMPTY<potentialNode>(OPEN)*/index_array < M && !SUCCESS)
         {
             //x ← FIRST(OPEN);
-            LinkedListNode<Configuration> x = OPEN[_index].First;
-            //OPEN[_index++].RemoveFirst();
+            if (OPEN[index_array].Count == 0) index_array++;
+
+            node = OPEN[index_array][0];
+            OPEN[index_array].RemoveAt(0);
+            //Debug.Log("Expand on " + node.getConfiguration().ToString() + " in " + node.potential);
+            float min = node.getCost();
             
             //for every neighbor x’ of x in the grid do
             for (int direction = 0; direction < 4; direction++)
             {
-                Configuration y = new Configuration(x.Value.x, x.Value.y, x.Value.theta);
-                if (direction == 0)         y.x += 1; //Right
-                else if (direction == 1)    y.y -= 1; //Down
-                else if (direction == 2)    y.x -= 1; //Left
-                else                        y.y += 1; // Up
+                Configuration front = new Configuration(node.getConfiguration());
+                if (direction == 0) front.x += 1f; //Right
+                else if (direction == 1) front.y -= 1f; //Down
+                else if (direction == 2) front.x -= 1f; //Left
+                else front.y += 1f; // Up
 
+                int potential = GetPotential(bitmap, front);
                 //if U(x’) < M and x’ is not visited then
-                if (BITMAP[(int)(1 + y.x), (int)(1 + y.y)] < M && !isVisited[(int)y.x, (int)y.y])
+                if (potential < M && !isVisited[Mathf.FloorToInt(front.x), Mathf.FloorToInt(front.y)])
                 {
                     //install x’ in T with a pointer toward x;
+                    NTree<Configuration> child = new NTree<Configuration>(front, node.getTree());
+                    node.getTree().AddChild(child);
+
+                    //INSERT(x’, OPEN);
+                    potentialNode newNode = new potentialNode(child, potential, front.distanceTo(goal));
+                    //Debug.Log("find index");
+                    int index = OPEN[potential].BinarySearch(newNode, comparer);
+                    //Debug.Log(front.ToString());
+                    //Debug.Log("potential is " + potential);
                     
-                    //INSERT(x’, OPEN); mark x’ visited;
-                    //OPEN[_index].AddFirst(y);
-                    isVisited[(int)y.x, (int)y.y] = true;
+                    if (index < 0) index = ~index;
+                    //Debug.Log("The index of " + front.ToString() + " in " + potential + " is " + index);
+                    //Debug.Log("The cost is " + newNode.getCost());
+                    OPEN[potential].Insert(index, newNode);
+                    if ( newNode.getCost() <= min)
+                    {
+                        index_array = potential;
+                        min = newNode.getCost();
+                    }
+
+                    //mark x’ visited;
+                    isVisited[Mathf.FloorToInt(front.x), Mathf.FloorToInt(front.y)] = true;
 
                     //if x’ = Xgoal then SUCCESS ← true;
-                    if (BITMAP[(int)(1 + y.x), (int)(1 + y.y)] == 0)
+                    if (Mathf.FloorToInt(newNode.heuristic) == 0)
+                    {
                         SUCCESS = true;
+                        goalTree = child;
+                        Debug.Log("Find the goal");
+                    }
                 }
             }
         }
 
         //if SUCCESS then
         //    return the constructed path by tracing the pointers in T from xgoal back to xinit
-        //else return failure;
+        if (SUCCESS)
+        {
+            NTree<Configuration> tree = goalTree;
+            List<Configuration> path = new List<Configuration>();
+            while(tree != null)
+            {
+                path.Insert(0, tree.GetData());
+                tree = tree.GetParent();
+            }
 
+            return path;
+        }
+        //else return failure;
+        return null;
     }
 
-    private bool EMPTY<T>(LinkedList<T>[] OPEN)
+    private bool EMPTY<T>(List<T>[] OPEN)
     {
         for (int i = 0; i < OPEN.Length; i++)
             if (OPEN[i].Count != 0) return false;
         return true;
     }
 
+    public int GetPotential(int[,] bitmap, Configuration config)
+    {
+        return bitmap[Mathf.FloorToInt(1 + config.x), Mathf.FloorToInt(1 + config.y)];
+    }
+
     public void resolvePotential()
     {
         isStarting = true;
         obstacleBitmap = GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().initBitmap();
-        Arbitration(0);
-
-        for (int i = 0; i < numOfRobot; i++)
+        List<Configuration> path = BFS(Arbitration(0), robotList[0].getConfiguration(), getOriginGoal(0));
+        for (int i = 0; i < path.Count;i++ )
         {
-            //Arbitration(i);
-            //BFS(Arbitration(i), robotList[i].getConfiguration(), getOriginGoal(i));
+            Debug.Log(path[i].ToString());
         }
+
+            for (int i = 0; i < numOfRobot; i++)
+            {
+                //Arbitration(i);
+                //BFS(Arbitration(i), robotList[i].getConfiguration(), getOriginGoal(i));
+            }
     }
 }
 
 
 
-delegate void TreeVisitor<T>(T nodeData);
+//delegate void TreeVisitor<T>(T nodeData);
 
-class NTree<T>
+public class NTree<T>
 {
     private T data;
     private LinkedList<NTree<T>> children;
@@ -285,6 +337,7 @@ class NTree<T>
     {
         this.data = data;
         children = new LinkedList<NTree<T>>();
+        parent = null;
     }
 
     public NTree(T data, NTree<T> parent)
@@ -299,6 +352,16 @@ class NTree<T>
         children.AddFirst(new NTree<T>(data));
     }
 
+    public void AddChild(NTree<T> child)
+    {
+        children.AddFirst(child);
+    }
+
+    public T GetData()
+    {
+        return this.data;
+    }
+
     public NTree<T> GetChild(int i)
     {
         foreach (NTree<T> n in children)
@@ -307,18 +370,59 @@ class NTree<T>
         return null;
     }
 
-    public void Traverse(NTree<T> node, TreeVisitor<T> visitor)
+    public NTree<T> GetParent()
     {
-        visitor(node.data);
-        foreach (NTree<T> kid in node.children)
-            Traverse(kid, visitor);
+        return parent;
     }
+
+    //public void Traverse(NTree<T> node, TreeVisitor<T> visitor)
+    //{
+    //    visitor(node.data);
+    //    foreach (NTree<T> kid in node.children)
+    //        Traverse(kid, visitor);
+    //}
 }
 
-class potentialNode
+public class potentialNode
 {
-    byte potential;
-    NTree<potentialNode> T;
-    int heuristic;
-    int step;
+    public int potential;
+    public float heuristic;
+    //Configuration configuration;
+    private NTree<Configuration> T;
+    //int step;
+
+    public potentialNode()
+    {
+        T = null;
+        potential = 0;
+        heuristic = 0;
+        //step = 0;
+    }
+
+    public potentialNode(NTree<Configuration> root, int potential, float h)
+    {
+        this.T = root;
+        this.potential = potential;
+        //configuration = new Configuration(config);
+        heuristic = h;
+        //step = g;
+    }
+
+    public void setTree(NTree<Configuration> root) { this.T = root; }
+
+    public float getCost() {return potential + heuristic;}
+    public NTree<Configuration> getTree() { return T; }
+    public Configuration getConfiguration() { return T.GetData(); }
+}
+
+public class PotentialNodeComparer : IComparer<potentialNode>
+{
+    public int Compare(potentialNode a, potentialNode b)
+    {
+        if (a == null && b == null) return 0;
+        else if (b == null) return 1;
+        else if (a.getCost() < b.getCost()) return -1;
+        else if (a.getCost() > b.getCost()) return 1;
+        else return 0;
+    }
 }

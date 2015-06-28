@@ -174,4 +174,14 @@ public class Configuration
         this.y = y;
         this.theta = theta;
     }
+
+    public float distanceTo(Configuration b)
+    {
+        return Mathf.Sqrt(Mathf.Pow(this.x - b.x, 2) + Mathf.Pow(this.y - b.y, 2));
+    }
+
+    public string ToString()
+    {
+        return "The Configuration ( " + x + ", " + y + ", " + theta + " )"; 
+    }
 }
