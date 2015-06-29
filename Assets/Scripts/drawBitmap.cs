@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 using ProtoTurtle.BitmapDrawing;
 
 public class drawBitmap : MonoBehaviour {
@@ -50,6 +50,21 @@ public class drawBitmap : MonoBehaviour {
                 texture.DrawFilledRectangle(new Rect(j, 127 - i, 1, 1), new Color(1f - bitValue / max, 1f - bitValue / max, 1f - bitValue / max));
             }
         }
+        texture.Apply();
+    }
+
+    public void drawPath(List<Configuration> path)
+    {
+        Material material = GetComponent<Renderer>().material;
+        Texture2D texture = new Texture2D(128, 128, TextureFormat.RGB24, false);
+        texture.wrapMode = TextureWrapMode.Clamp;
+        material.SetTexture(0, texture);
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            texture.DrawFilledRectangle(new Rect(Mathf.FloorToInt(path[i].x), 127 - Mathf.FloorToInt(path[i].y), 1, 1), Color.red);
+        }
+
         texture.Apply();
     }
 }

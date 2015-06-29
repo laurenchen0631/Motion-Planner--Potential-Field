@@ -173,11 +173,6 @@ public class robotManagerScript : MonoBehaviour
         for (int i = 0; i < goals.Count; i++)
             bitmaps.Add( NF1(goals[i]) );
 
-        //for (int i = 0; i < goals.Count; i++)
-        //    print("(" + goals[i].x + "," + goals[i].y + ")");
-
-        //GameObject.Find("Canva Bound").GetComponent<drawBitmap>().draw(bitmaps[0]);
-
         //The overall potential value U is computed by composing the potential values from p1 to pn
         for (int i = 0; i < 130; i++)
         {
@@ -195,7 +190,7 @@ public class robotManagerScript : MonoBehaviour
 
     private List<Configuration> BFS(int[,] bitmap, Configuration start, Configuration goal)
     {
-        const int M = 510;
+        int M = 510;
         int END = GetPotential(bitmap, goal);
         int START = GetPotential(bitmap, start);
         PotentialNodeComparer comparer = new PotentialNodeComparer();
@@ -206,7 +201,7 @@ public class robotManagerScript : MonoBehaviour
         //install Xinit in T; [initially, T is the empty tree]
         NTree<Configuration> T = new NTree<Configuration>(start, null);
         //INSERT(Xinit, OPEN);
-        potentialNode node = new potentialNode(T, GetPotential(bitmap, start), start.distanceTo(goal));
+        potentialNode node = new potentialNode(T, START, start.distanceTo(goal));
         int index_array = START;
         OPEN[index_array].Add(node);
         //mark Xinit visited;[initially, all the points in the grid are marked “unvisited”]
@@ -237,6 +232,7 @@ public class robotManagerScript : MonoBehaviour
                 else front.y += 1f; // Up
 
                 int potential = GetPotential(bitmap, front);
+                //Debug.Log(front.ToString() + " is " + potential);
                 //if U(x’) < M and x’ is not visited then
                 if (potential < M && !isVisited[Mathf.FloorToInt(front.x), Mathf.FloorToInt(front.y)])
                 {
@@ -250,12 +246,12 @@ public class robotManagerScript : MonoBehaviour
                     int index = OPEN[potential].BinarySearch(newNode, comparer);
                     //Debug.Log(front.ToString());
                     //Debug.Log("potential is " + potential);
-                    
+
                     if (index < 0) index = ~index;
                     //Debug.Log("The index of " + front.ToString() + " in " + potential + " is " + index);
                     //Debug.Log("The cost is " + newNode.getCost());
                     OPEN[potential].Insert(index, newNode);
-                    if ( newNode.getCost() <= min)
+                    if (newNode.getCost() <= min)
                     {
                         index_array = potential;
                         min = newNode.getCost();
@@ -269,7 +265,7 @@ public class robotManagerScript : MonoBehaviour
                     {
                         SUCCESS = true;
                         goalTree = child;
-                        Debug.Log("Find the goal");
+                        //Debug.Log("Find the goal");
                     }
                 }
             }
@@ -302,7 +298,7 @@ public class robotManagerScript : MonoBehaviour
 
     public int GetPotential(int[,] bitmap, Configuration config)
     {
-        return bitmap[Mathf.FloorToInt(1 + config.x), Mathf.FloorToInt(1 + config.y)];
+        return bitmap[Mathf.FloorToInt(1 + config.y), Mathf.FloorToInt(1 + config.x)];
     }
 
     public void resolvePotential()
@@ -310,11 +306,12 @@ public class robotManagerScript : MonoBehaviour
         isStarting = true;
         obstacleBitmap = GameObject.Find("Obstacle Manager").GetComponent<obstacleManagerScript>().initBitmap();
         List<Configuration> path = BFS(Arbitration(0), robotList[0].getConfiguration(), getOriginGoal(0));
-        for (int i = 0; i < path.Count;i++ )
-        {
-            Debug.Log(path[i].ToString());
-        }
-
+        
+        //for (int i = 0; i < path.Count;i++ )
+        //{
+        //    Debug.Log(path[i].ToString());
+        //}
+        GameObject.Find("Canva Bound").GetComponent<drawBitmap>().drawPath(path);
             for (int i = 0; i < numOfRobot; i++)
             {
                 //Arbitration(i);
